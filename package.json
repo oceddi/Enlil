@@ -1,0 +1,8 @@
+{
+  "name"           : "Enlil",
+  "description"    : "HTML 5 Game Platform",
+  "author"         : "Dean McKee <oceddi@gmail.com>",
+  "dependencies"   : {
+    "cradle"       : "*"
+  }
+}
