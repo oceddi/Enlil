@@ -4,7 +4,7 @@
       <script type="text/javascript" src="../lib/sheets.js"></script>
    </head>
    <body>
-   <h1>Hello from Enlil!!</h1>
+   <h1>Enlil Test Page</h1>
 
    <div id='version'></div> 
    <div id='fps'></div> 
@@ -14,35 +14,43 @@
    </body>
 
    <script type="text/javascript">
-      var ver = document.getElementById('version');
-      var fps = document.getElementById('fps');
-      var mon1 = document.getElementById('monster1');
-      var mon2 = document.getElementById('monster2');
+      var ver   = document.getElementById('version');
+      var fps   = document.getElementById('fps');
+      var mon1  = document.getElementById('monster1');
+      var mon2  = document.getElementById('monster2');
       var count = 0;
+      var h = 0;
+      var step = 10;
 
       var advance = function() {
-         Enlil.drawActor('monIfrit', count);
-         Enlil.drawActor('monBahamut', count);
+         Enlil.drawActor('monIfrit', count, h, 100);
+         Enlil.drawActor('monBahamut', count, h, 200);
          Enlil.tick();
          count++;
-         if(count>15) count=0;
+         h+=step;
+         if(count>15)
+         { 
+            count=0;
+            step = -step;
+         }
          fps.innerHTML = 'FPS: ' + Enlil.fps;
+
       };
 
-      Sheets.add('ifrit', {resource:'ifrit.png', cwidth:80, cheight:80});
+      Sheets.add('ifrit',   {resource:'ifrit.png',   cwidth:80, cheight:80});
       Sheets.add('bahamut', {resource:'bahamut.png', cwidth:96, cheight:96});
 
       ver.innerHTML = 'Version: ' + Enlil.version; 
 
       Enlil.createActor({
-         name  : 'monIfrit',
+         name    : 'monIfrit',
          sheetid : 'ifrit',
-         div   : 'div1'
+         div     : 'div1'
       });
       Enlil.createActor({
-         name  : 'monBahamut',
+         name    : 'monBahamut',
          sheetid : 'bahamut',
-         div   : 'div2'
+         div     : 'div2'
       });
       
       window.onload = function() {
