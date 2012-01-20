@@ -20,25 +20,73 @@
       var mon2  = document.getElementById('monster2');
       var count = 0;
       var h = 0;
+      var v = 0;
       var step = 10;
+      var track = ['right', 'down', 'left', 'up'];
 
       var advance = function() {
-         Enlil.drawActor('monIfrit', count, h, 100);
-         Enlil.drawActor('monBahamut', count, h, 200);
+         var dir = track[parseInt(count/16)];
+
+         Enlil.drawActorGroup('monIfrit',   dir, count % 4, h, v + 300);
+         Enlil.drawActorGroup('monBahamut', dir, count % 4, h, v + 400);
+
          Enlil.tick();
          count++;
-         h+=step;
-         if(count>15)
+
+         switch(dir)
+         {
+            case 'down':
+               v = v + step;
+               break;
+
+            case 'left':
+               h = h - step;
+               break;
+
+            case 'right':
+               h = h + step;
+               break;
+
+            case 'up':
+               v = v - step;
+               break;
+         }
+
+         if(count>63)
          { 
             count=0;
-            step = -step;
          }
          fps.innerHTML = 'FPS: ' + Enlil.fps;
 
       };
 
-      Sheets.add('ifrit',   {resource:'ifrit.png',   cwidth:80, cheight:80});
-      Sheets.add('bahamut', {resource:'bahamut.png', cwidth:96, cheight:96});
+      Sheets.add('ifrit',   
+      {
+         resource:'ifrit.png',
+         cwidth:80,
+         cheight:80,
+         groups:
+         {
+            'down'  : [  0,  3 ],
+            'left'  : [  4,  7 ],
+            'right' : [  8, 11 ],
+            'up'    : [ 12, 15 ]
+         }
+      });
+
+      Sheets.add('bahamut',
+      {
+         resource:'bahamut.png',
+         cwidth:96,
+         cheight:96,
+         groups:
+         {
+            'down'  : [  0,  3 ],
+            'left'  : [  4,  7 ],
+            'right' : [  8, 11 ],
+            'up'    : [ 12, 15 ]
+         }
+      });
 
       ver.innerHTML = 'Version: ' + Enlil.version; 
 
