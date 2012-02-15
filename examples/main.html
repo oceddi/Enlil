@@ -2,6 +2,7 @@
    <head>
       <script type="text/javascript" src="../lib/enlil.js"></script>
       <script type="text/javascript" src="../lib/sheets.js"></script>
+      <script type="text/javascript" src="../lib/path.js"></script>
    </head>
    <body>
    <h1>Enlil Test Page</h1>
@@ -25,40 +26,71 @@
       var track = ['right', 'down', 'left', 'up'];
 
       var advance = function() {
-         var dir = track[parseInt(count/16)];
+         var loc1 = Paths.interpolate(loopIfrit);
+         var loc2 = Paths.interpolate(loopBahamut);
 
-         Enlil.drawActorGroup('monIfrit',   dir, count % 4, h, v + 300);
-         Enlil.drawActorGroup('monBahamut', dir, count % 4, h, v + 400);
+         Enlil.drawActorGroup('monIfrit',   loc1.gid, count % 4, loc1.x, loc1.y);
+         Enlil.drawActorGroup('monBahamut', loc2.gid, count % 4, loc2.x, loc2.y);
 
          Enlil.tick();
          count++;
-
-         switch(dir)
-         {
-            case 'down':
-               v = v + step;
-               break;
-
-            case 'left':
-               h = h - step;
-               break;
-
-            case 'right':
-               h = h + step;
-               break;
-
-            case 'up':
-               v = v - step;
-               break;
-         }
-
-         if(count>63)
-         { 
-            count=0;
-         }
          fps.innerHTML = 'FPS: ' + Enlil.fps;
 
       };
+
+      Paths.add('box',
+      {
+         waypoints:
+         [
+            /* h, v */
+            [   0, 300 ],
+            [ 860, 300 ],
+            [ 860, 660 ],
+            [   0, 660 ]
+         ]
+      });
+
+      var loopIfrit = Paths.instantiate('box',
+         {
+            repeats:   true,
+            closeloop: true,
+            intervals:
+            [
+               20,
+               2,
+               16,
+               2
+            ],
+            groups:
+            [
+               'right',
+               'down',
+               'left',
+               'up'
+            ]
+         }
+      );
+
+      var loopBahamut = Paths.instantiate('box',
+         {
+            repeats:   true,
+            closeloop: true,
+            intervals:
+            [
+               10,
+               1,
+               8,
+               1
+            ],
+            groups:
+            [
+               'right',
+               'down',
+               'left',
+               'up'
+            ]
+         }
+      );
 
       Sheets.add('ifrit',   
       {
@@ -103,7 +135,8 @@
       
       window.onload = function() {
          Enlil.startFPS();
-         window.setInterval(advance, 100);
+         Enlil.registerRunLoop(advance);
+         Enlil.start();
       }
    </script>
 </html>
