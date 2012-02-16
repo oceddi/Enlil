@@ -1,9 +1,13 @@
-This library can be used to animate arbitrary images contained in sprite sheets.  This could be used as a component
-in an HTML5 game or for whatever sprite animation project you choose.
+This javascript library can be used to animate arbitrary images contained in sprite sheets using HTML5 mechansims (canvas).  This could be used as a component in an HTML5 game or for whatever sprite animation project you choose.
 
 Current Feature Set:
 
 - Parse sprite sheets into groupings of animations (i.e. walk, run, fly, jump, etc).
-- Cycle through various groupings durin draw calls.
-- Movement can be controlled directly by setting screen coordinates or movement paths can be pre-defined and and
-  interpolated path can queried at varying time intervals.
+- Cycle through various animation groupings during draw calls.
+- Sprite movement can be controlled directly by setting screen coordinates or movement paths can be pre-defined and and
+  interpolated paths (tweening) can queried at varying time intervals for coordinates.
+
+
+Special Thanks:
+
+Sprite sheets in the example directory courtesy of Sithjester at http://untamed.wild-refuge.net/rpgxp.php
