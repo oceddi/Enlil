@@ -17,8 +17,6 @@
    <script type="text/javascript">
       var ver   = document.getElementById('version');
       var fps   = document.getElementById('fps');
-      var mon1  = document.getElementById('monster1');
-      var mon2  = document.getElementById('monster2');
       var animCount = 0;
 
       var advance = function() {
@@ -29,7 +27,7 @@
 
          Enlil.drawActorGroup('monIfrit',   loc1.gid, animCount % 4, loc1.x,        loc1.y);
          Enlil.drawActorGroup('monBahamut', loc2.gid, animCount % 4, loc2.x,        loc2.y);
-         Enlil.drawActorGroup('circleDude', loc3.gid, animCount % 4, loc3.x+loc4.x, loc3.y+loc4.y);
+         Enlil.drawActorGroup('circleBat',  loc3.gid, animCount % 4, loc3.x+loc4.x, loc3.y+loc4.y);
 
          if(Paths.hasStopped(pathPacing))
          {
@@ -205,6 +203,21 @@
          }
       });
 
+      Sheets.add('goldbat',
+      {
+         resource:'goldbat.png',
+         cwidth:32,
+         cheight:48,
+         groups:
+         {
+            'down'  : [  0,  3 ],
+            'left'  : [  4,  7 ],
+            'right' : [  8, 11 ],
+            'up'    : [ 12, 15 ]
+         }
+      });
+
+
       ver.innerHTML = 'Version: ' + Enlil.version; 
 
       Enlil.createActor({
@@ -218,8 +231,8 @@
          div     : 'div2'
       });
       Enlil.createActor({
-         name    : 'circleDude',
-         sheetid : 'bahamut',
+         name    : 'circleBat',
+         sheetid : 'goldbat',
          div     : 'div3'
       });
       
