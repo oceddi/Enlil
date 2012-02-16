@@ -11,7 +11,7 @@
    <div id='fps'></div> 
    <div id='div1'></div>
    <div id='div2'></div>
-
+   <div id='div3'></div>
    </body>
 
    <script type="text/javascript">
@@ -19,30 +19,42 @@
       var fps   = document.getElementById('fps');
       var mon1  = document.getElementById('monster1');
       var mon2  = document.getElementById('monster2');
-      var count = 0;
-      var h = 0;
-      var v = 0;
-      var step = 10;
-      var track = ['right', 'down', 'left', 'up'];
+      var animCount = 0;
 
       var advance = function() {
-         var loc1 = Paths.interpolate(loopIfrit);
-         var loc2 = Paths.interpolate(loopBahamut);
+         var loc1 = Paths.interpolate(pathIfrit);
+         var loc2 = Paths.interpolate(pathBahamut);
+         var loc3 = Paths.interpolate(pathCircle);
+         var loc4 = Paths.interpolate(pathPacing);
 
-         Enlil.drawActorGroup('monIfrit',   loc1.gid, count % 4, loc1.x, loc1.y);
-         Enlil.drawActorGroup('monBahamut', loc2.gid, count % 4, loc2.x, loc2.y);
+         Enlil.drawActorGroup('monIfrit',   loc1.gid, animCount % 4, loc1.x,        loc1.y);
+         Enlil.drawActorGroup('monBahamut', loc2.gid, animCount % 4, loc2.x,        loc2.y);
+         Enlil.drawActorGroup('circleDude', loc3.gid, animCount % 4, loc3.x+loc4.x, loc3.y+loc4.y);
+
+         if(Paths.hasStopped(pathPacing))
+         {
+            if(Paths.hasStopped(pathCircle))
+            {
+               console.log("runCount: " + Paths.runCount(pathCircle) + " wpCount: " + Paths.waypointCount(pathPacing));
+
+               /* Start a new circle at the end of each waypoint of the pacing path. */
+               if(Paths.runCount(pathCircle) == Paths.waypointCount(pathPacing))
+                  Paths.reset(pathCircle);
+               else /* Finished circle, start the next pacing path waypoint. */
+                  Paths.resume(pathPacing);
+            }
+         }
 
          Enlil.tick();
-         count++;
+         animCount++;
          fps.innerHTML = 'FPS: ' + Enlil.fps;
-
       };
 
       Paths.add('box',
       {
          waypoints:
          [
-            /* h, v */
+            /*  x, y */
             [   0, 300 ],
             [ 860, 300 ],
             [ 860, 660 ],
@@ -50,8 +62,9 @@
          ]
       });
 
-      var loopIfrit = Paths.instantiate('box',
+      var pathIfrit = Paths.instantiate('box',
          {
+            automatic: true,
             repeats:   true,
             closeloop: true,
             intervals:
@@ -71,8 +84,9 @@
          }
       );
 
-      var loopBahamut = Paths.instantiate('box',
+      var pathBahamut = Paths.instantiate('box',
          {
+            automatic: true,
             repeats:   true,
             closeloop: true,
             intervals:
@@ -88,6 +102,77 @@
                'down',
                'left',
                'up'
+            ]
+         }
+      );
+
+      /* Do an animation flying in a circle layered on top another one going back and forth. */
+      var circlepoints    = [];
+      var circleintervals = [];
+      var circlegroups    = [];
+
+      for(var i=0; i<360; i+=10)
+      {
+         var x = Math.cos((i*Math.PI)/180)*100;
+         var y = Math.sin((i*Math.PI)/180)*100;
+         circlepoints.push( [ x, y ] );
+         circleintervals.push(0.01);
+
+         /* Have the animation face outward based on position in circle. */
+         if(i < 45 || i >= 315)
+         {
+            circlegroups.push('right');
+         }
+         else if(i < 135)
+         {
+            circlegroups.push('down');
+         }
+         else if(i < 225)
+         {
+            circlegroups.push('left');
+         }
+         else if(i < 315)
+         {
+            circlegroups.push('up');
+         }
+      }
+
+      Paths.add('circle',
+      {
+         waypoints: circlepoints
+      });
+
+      Paths.add('pacing',
+      {
+         waypoints:
+         [
+            /*  x, y */
+            [   0, 300 ],
+            [ 400, 300 ],
+            [ 860, 300 ]
+         ]
+      });
+
+      var pathCircle = Paths.instantiate('circle',
+         {
+            automatic: true,
+            repeats:   false,
+            closeloop: true,
+            intervals: circleintervals,
+            groups:    circlegroups
+         }
+      );
+
+      var pathPacing = Paths.instantiate('pacing',
+         {
+            automatic: false,
+            repeats:   true,
+            closeloop: true,
+            intervals: 
+            [
+               2,
+               2,
+               2
             ]
          }
       );
@@ -131,6 +216,11 @@
          name    : 'monBahamut',
          sheetid : 'bahamut',
          div     : 'div2'
+      });
+      Enlil.createActor({
+         name    : 'circleDude',
+         sheetid : 'bahamut',
+         div     : 'div3'
       });
       
       window.onload = function() {
