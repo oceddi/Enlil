@@ -1,4 +1,5 @@
-This javascript library can be used to animate arbitrary images contained in sprite sheets using HTML5 mechansims (canvas).  This could be used as a component in an HTML5 game or for whatever sprite animation project you choose.
+This javascript library can be used to animate arbitrary images contained in sprite sheets using HTML5 mechanisms (canvas).  
+This could be used as a component in an HTML5 game or for whatever sprite animation project you choose.
 
 Current Feature Set:
 
