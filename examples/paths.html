@@ -1,11 +1,13 @@
 <html>
    <head>
       <script type="text/javascript" src="../lib/enlil.js"></script>
+      <script type="text/javascript" src="../lib/actor.js"></script>
       <script type="text/javascript" src="../lib/sheets.js"></script>
-      <script type="text/javascript" src="../lib/path.js"></script>
+      <script type="text/javascript" src="../lib/path.js"></script>      
+      <script type="text/javascript" src="../lib/animator.js"></script>
    </head>
    <body>
-   <h1>Enlil Test Page</h1>
+   <h1>Paths Test Page</h1>
 
    <div id='version'></div> 
    <div id='fps'></div> 
@@ -20,26 +22,31 @@
       var animCount = 0;
 
       var advance = function() {
-         var loc1 = Paths.interpolate(pathIfrit);
-         var loc2 = Paths.interpolate(pathBahamut);
-         var loc3 = Paths.interpolate(pathCircle);
-         var loc4 = Paths.interpolate(pathPacing);
+         var locations    = Paths.interpolateAll();
+         var monIfritId   = Actors.getIdForName('monIfrit');
+         var monBahamutId = Actors.getIdForName('monBahamut');
+         var circleBatId  = Actors.getIdForName('circleBat');
 
-         Enlil.drawActorGroup('monIfrit',   loc1.gid, animCount % 4, loc1.x,        loc1.y);
-         Enlil.drawActorGroup('monBahamut', loc2.gid, animCount % 4, loc2.x,        loc2.y);
-         Enlil.drawActorGroup('circleBat',  loc3.gid, animCount % 4, loc3.x+loc4.x, loc3.y+loc4.y);
+         Actors.drawGroup(monIfritId,   locations[pathBoxSlow].gid, animCount % 4, locations[pathBoxSlow].x, locations[pathBoxSlow].y);
+         Actors.drawGroup(monBahamutId, locations[pathBoxFast].gid, animCount % 4, locations[pathBoxFast].x, locations[pathBoxFast].y);
+
+         if(locations[circleBatId].gid)
+            Actors.drawGroup(circleBatId,  locations[pathCircle].gid,  animCount % 4, locations[pathPacing].x+locations[pathCircle].x,  locations[pathPacing].y+locations[pathCircle].y);
+
 
          if(Paths.hasStopped(pathPacing))
          {
             if(Paths.hasStopped(pathCircle))
             {
-               console.log("runCount: " + Paths.runCount(pathCircle) + " wpCount: " + Paths.waypointCount(pathPacing));
-
                /* Start a new circle at the end of each waypoint of the pacing path. */
                if(Paths.runCount(pathCircle) == Paths.waypointCount(pathPacing))
+               {
                   Paths.reset(pathCircle);
+               }
                else /* Finished circle, start the next pacing path waypoint. */
+               {
                   Paths.resume(pathPacing);
+               }
             }
          }
 
@@ -60,11 +67,13 @@
          ]
       });
 
-      var pathIfrit = Paths.instantiate('box',
+      var pathBoxSlow = Paths.instantiate('box',
          {
             automatic: true,
             repeats:   true,
-            closeloop: true,
+            closeLoop: true,
+            reverses:  false,
+            curve:     'linear',
             intervals:
             [
                20,
@@ -82,11 +91,13 @@
          }
       );
 
-      var pathBahamut = Paths.instantiate('box',
+      var pathBoxFast = Paths.instantiate('box',
          {
             automatic: true,
             repeats:   true,
-            closeloop: true,
+            closeLoop: true,
+            reverses:  false,
+            curve:     'linear',
             intervals:
             [
                10,
@@ -114,7 +125,7 @@
          var x = Math.cos((i*Math.PI)/180)*100;
          var y = Math.sin((i*Math.PI)/180)*100;
          circlepoints.push( [ x, y ] );
-         circleintervals.push(0.01);
+         circleintervals.push(0.1);
 
          /* Have the animation face outward based on position in circle. */
          if(i < 45 || i >= 315)
@@ -155,7 +166,9 @@
          {
             automatic: true,
             repeats:   false,
-            closeloop: true,
+            closeLoop: true,
+            reverses:  false,
+            curve:     'linear',
             intervals: circleintervals,
             groups:    circlegroups
          }
@@ -165,7 +178,9 @@
          {
             automatic: false,
             repeats:   true,
-            closeloop: true,
+            closeLoop: true,
+            reverses:  false,
+            curve:     'linear',
             intervals: 
             [
                2,
@@ -217,29 +232,37 @@
          }
       });
 
+      Actors.add( 
+         {
+            name : 'monIfrit',
+         sheetid : 'ifrit',
+             div : 'div1' 
+         }
+      );
+
+      Actors.add( 
+         {
+            name : 'monBahamut',
+         sheetid : 'bahamut',
+             div : 'div2' 
+         }
+      );
+
+      Actors.add( 
+         {
+            name : 'circleBat',
+         sheetid : 'goldbat',
+             div : 'div3' 
+         }
+      );
+
 
       ver.innerHTML = 'Version: ' + Enlil.version; 
-
-      Enlil.createActor({
-         name    : 'monIfrit',
-         sheetid : 'ifrit',
-         div     : 'div1'
-      });
-      Enlil.createActor({
-         name    : 'monBahamut',
-         sheetid : 'bahamut',
-         div     : 'div2'
-      });
-      Enlil.createActor({
-         name    : 'circleBat',
-         sheetid : 'goldbat',
-         div     : 'div3'
-      });
       
       window.onload = function() {
          Enlil.startFPS();
          Enlil.registerRunLoop(advance);
-         Enlil.start();
+         Enlil.start(60);
       }
    </script>
 </html>
