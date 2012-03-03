@@ -6,7 +6,6 @@
       <script type="text/javascript" src="../lib/sheets.js"></script>
       <script type="text/javascript" src="../lib/path.js"></script>      
       <script type="text/javascript" src="../lib/animator.js"></script>
-      <script type="text/javascript" src="testpackage.json"></script>
    </head>
    <body>
    <h1>Loader Test Page</h1>
@@ -25,13 +24,16 @@
          fps.innerHTML = 'FPS: ' + Enlil.fps;
       };
 
-      window.onload = function() {
-         /* package is defined in testpackage.json file. */
-         Enlil.loadPackage(package);
-
+      var run = function () {
          Enlil.startFPS();
          Enlil.registerRunLoop(advance);
          Enlil.start(30);
+      };
+
+      window.onload = function() {
+         /* package is defined in testpackage.json file. */
+         Enlil.loadPackage("testpackage.json", run);
       }
+
    </script>
 </html>

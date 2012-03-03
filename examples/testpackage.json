@@ -1,4 +1,3 @@
-var package =
 {
    title  : 'Test Loader',
    author : 'Dean McKee',
@@ -195,4 +194,4 @@ var package =
          ]
       } 
    },
-};
+}
