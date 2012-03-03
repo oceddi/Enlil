@@ -13,7 +13,7 @@ var package =
                   id : 'first',
                 data :
             {
-               resource : 'blue.jpg',
+               resource : 'assets/blue.jpg',
                  cwidth : 1024,
                 cheight : 720
             },
@@ -29,7 +29,7 @@ var package =
               id : 'bahamut',
             data :
             {
-               resource : 'bahamut.png',
+               resource : 'assets/bahamut.png',
                  cwidth : 96,
                 cheight : 96,
                  groups :
@@ -45,7 +45,7 @@ var package =
               id : 'ifrit',   
             data :
             {
-               resource: 'ifrit.png',
+               resource: 'assets/ifrit.png',
                  cwidth: 80,
                 cheight: 80,
                  groups:
@@ -61,7 +61,7 @@ var package =
               id : 'goldbat',
             data :
             {
-               resource: 'goldbat.png',
+               resource: 'assets/goldbat.png',
                  cwidth: 32,
                 cheight: 48,
                  groups:
