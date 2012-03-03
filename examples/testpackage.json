@@ -1,0 +1,198 @@
+var package =
+{
+   title  : 'Test Loader',
+   author : 'Dean McKee',
+   anchor : 'stage',
+   first  : 'main',
+
+   assets:
+   {
+      backdrops :
+      [
+         {
+                  id : 'first',
+                data :
+            {
+               resource : 'blue.jpg',
+                 cwidth : 1024,
+                cheight : 720
+            },
+            relative : true
+         }
+      ],
+      tiles :
+      [
+      ],
+      spritesheets :
+      [
+         {
+              id : 'bahamut',
+            data :
+            {
+               resource : 'bahamut.png',
+                 cwidth : 96,
+                cheight : 96,
+                 groups :
+               {
+                  'down'  : [  0,  3 ],
+                  'left'  : [  4,  7 ],
+                  'right' : [  8, 11 ],
+                  'up'    : [ 12, 15 ]
+               }
+            },
+         },
+         {
+              id : 'ifrit',   
+            data :
+            {
+               resource: 'ifrit.png',
+                 cwidth: 80,
+                cheight: 80,
+                 groups:
+               {
+                  'down'  : [  0,  3 ],
+                  'left'  : [  4,  7 ],
+                  'right' : [  8, 11 ],
+                  'up'    : [ 12, 15 ]
+               }
+            },
+         },
+         {
+              id : 'goldbat',
+            data :
+            {
+               resource: 'goldbat.png',
+                 cwidth: 32,
+                cheight: 48,
+                 groups:
+               {
+                  'down'  : [  0,  3 ],
+                  'left'  : [  4,  7 ],
+                  'right' : [  8, 11 ],
+                  'up'    : [ 12, 15 ]
+               } 
+            },
+         },
+      ],
+      wavfiles :
+      [
+      ],
+   },
+
+   states:
+   {
+      'main' : 
+      {
+         name: 'Start Screen',
+         backdrop: 'first',
+         actors:
+         [
+            {
+                name : 'JimmyBat',
+             sheetid : 'goldbat',
+               paths : 
+               [
+                  {
+                     id : 'line',
+                     automatic: true,
+                     repeats:   true,
+                     closeLoop: true,
+                     reverses:  true,
+                     curve:     'linear',
+                     intervals: 
+                     [
+                        2,
+                        2,
+                        2,
+                        2,
+                        2,
+                        2
+                     ],
+                     groups:
+                     [
+                        'right',
+                        'right',
+                        'left'
+                     ]
+                  }
+               ]
+            },
+            {
+                name : 'TommyBat',
+             sheetid : 'ifrit',
+               paths : 
+               [
+                  {
+                     id : 'triangle',
+                     automatic: true,
+                     repeats:   true,
+                     closeLoop: true,
+                     reverses:  true,
+                     curve:     'quadratic',
+                     intervals: 
+                     [
+                        2,
+                        2,
+                        2,
+                        2
+                     ]
+                  }
+               ]
+            },
+            {
+                name : 'FreddyBat',
+             sheetid : 'bahamut',
+               paths : 
+               [
+                  {
+                     id : 'box',
+                     automatic: true,
+                     repeats:   true,
+                     closeLoop: true,
+                     reverses:  true,
+                     curve:     'cubic',
+                     intervals: 
+                     [
+                        2,
+                        2,
+                        2,
+                        2
+                     ]
+                  }
+               ]
+            }
+
+         ],
+         paths:
+         [
+            {
+               id : 'line',
+               waypoints:
+               [
+                  [   0, 300 ],
+                  [ 400, 300 ]
+               ]
+            },
+            {
+               id : 'triangle',
+               waypoints:
+               [
+                  [   0, 300 ],
+                  [ 430, 50  ],
+                  [ 860, 300 ]
+               ]
+            },
+            {
+               id : 'box',
+               waypoints:
+               [
+                  [   0, 300 ],
+                  [ 860, 300 ],
+                  [ 860, 660 ],
+                  [   0, 660 ]
+               ]
+            },
+         ]
+      } 
+   },
+};
