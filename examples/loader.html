@@ -30,10 +30,13 @@
          Enlil.start(30);
       };
 
+
+
       window.onload = function() {
+
          /* package is defined in testpackage.json file. */
-         Enlil.loadPackage("testpackage.json", run);
-      }
+         Enlil.loadPackage("testpackage.json", 'stage', run);
+      };
 
    </script>
 </html>
