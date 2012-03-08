@@ -1,17 +1,13 @@
 {
   "author": "Dean McKee <oceddi@gmail.com>",
   "name": "Enlil",
-  "description": "HTML5 Gaming platform",
+  "description": "HTML5 Gaming platform client libraries.",
   "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "git://github.com/oceddi/Enlil.git"
   },
-  "engines": {
-    "node": "~0.4.12"
-  },
-  "dependencies": {
-    "cradle": "0.5.x"
-  },
+  "engines": {},
+  "dependencies": {},
   "devDependencies": {}
 }
