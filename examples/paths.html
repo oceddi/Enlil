@@ -5,6 +5,7 @@
       <script type="text/javascript" src="../lib/sheets.js"></script>
       <script type="text/javascript" src="../lib/path.js"></script>      
       <script type="text/javascript" src="../lib/animator.js"></script>
+      <script type="text/javascript" src="../lib/input.js"></script>
    </head>
    <body>
    <h1>Paths Test Page</h1>
@@ -14,21 +15,29 @@
    <div id='div1'></div>
    <div id='div2'></div>
    <div id='div3'></div>
+   <div id='div4'></div>
+
    </body>
 
    <script type="text/javascript">
       var ver   = document.getElementById('version');
       var fps   = document.getElementById('fps');
-      var animCount = 0;
+      var animCount  = 0;
 
       var advance = function() {
          var locations    = Paths.interpolateAll();
          var monIfritId   = Actors.getIdForName('monIfrit');
          var monBahamutId = Actors.getIdForName('monBahamut');
          var circleBatId  = Actors.getIdForName('circleBat');
+         var pirateId     = Actors.getIdForName('pirate');
 
          Actors.drawGroup(monIfritId,   locations[pathBoxSlow].gid, animCount % 4, locations[pathBoxSlow].x, locations[pathBoxSlow].y);
          Actors.drawGroup(monBahamutId, locations[pathBoxFast].gid, animCount % 4, locations[pathBoxFast].x, locations[pathBoxFast].y);
+
+         if(!Paths.hasStopped(piratePath))
+            Actors.drawGroup(pirateId,     locations[piratePath].gid,  animCount % 4, locations[piratePath].x,  locations[piratePath].y);
+         else
+            Actors.drawGroup(pirateId,     locations[piratePath].gid,  0,             locations[piratePath].x,  locations[piratePath].y);
 
          if(locations[circleBatId].gid)
             Actors.drawGroup(circleBatId,  locations[pathCircle].gid,  animCount % 4, locations[pathPacing].x+locations[pathCircle].x,  locations[pathPacing].y+locations[pathCircle].y);
@@ -162,6 +171,16 @@
          ]
       });
 
+      Paths.add('pirate_walk',
+      {
+         waypoints:
+         [
+            /*  x, y */
+            [ 50, 50 ],
+            [ 100, 50 ]
+         ]
+      });
+
       var pathCircle = Paths.instantiate('circle',
          {
             automatic: true,
@@ -186,6 +205,24 @@
                2,
                2,
                2
+            ]
+         }
+      );
+
+      var piratePath = Paths.instantiate('pirate_walk',
+         {
+            automatic: true,
+            repeats:   false,
+            closeLoop: false,
+            reverses:  false,
+            curve:     'linear',
+            intervals: 
+            [
+               5
+            ],
+            groups:
+            [
+               'right'
             ]
          }
       );
@@ -232,6 +269,20 @@
          }
       });
 
+      Sheets.add('pirate',
+      {
+         resource:'assets/pirate_m2.png',
+         cwidth:32,
+         cheight:48,
+         groups:
+         {
+            'down'  : [  0,  3 ],
+            'left'  : [  4,  7 ],
+            'right' : [  8, 11 ],
+            'up'    : [ 12, 15 ]  
+         }
+      });
+
       Actors.add( 
          {
             name : 'monIfrit',
@@ -256,12 +307,117 @@
          }
       );
 
+      Actors.add(
+         {  
+            name : 'pirate',
+         sheetid : 'pirate',
+            div  : 'div4'
+         }
+      );
 
-      ver.innerHTML = 'Version: ' + Enlil.version; 
-      
+      ver.innerHTML = 'Version: ' + Enlil.version;
+
+      var arrowHandler = function keyDown (event) {
+         var arrowKeyCodes = {
+            37: "left",   // left
+            38: "up",     // up
+            39: "right",  // right
+            40: "down"    // down
+         };
+
+         if(arrowKeyCodes[event.keyCode]) {
+            event.stop();
+            console.log("ARROW!!!" + arrowKeyCodes[event.keyCode]);
+
+            if( event.shiftKey )
+            {
+               console.log (" with SHIFT.");
+            }
+
+            if( event.ctrlKey )
+            {
+               console.log (" with CTRL.");
+            }
+
+            if( event.altKey )
+            {
+               console.log (" with ALT.");
+            }
+         }
+      };
+
+      var clickHandler = function userClicked (event) {
+         var target = event.target || event.srcElement;
+         var pageX = event.pageX;
+         var pageY = event.pageY;
+         var pirLoc;
+         var dir;
+
+         if(pageX == undefined) {
+            pageX = event.clientX + document.body.scrollLeft;
+            pageY = event.clientY + document.body.scrollTop;
+         }
+         
+         console.log("CLICK!!! X:" + pageX + " Y: " + pageY);
+
+         pirLoc = Paths.interpolate(piratePath);
+         Paths.stop(piratePath);
+
+         if( (pageX - pirLoc['x']) > 40)
+         {
+            dir = 'right';
+         }
+         else if (( pageX - pirLoc['x']) > -40)
+         {
+            if((pageY - pirLoc['y']) > 0)
+            {
+               dir = 'down';
+            }
+            else
+            {
+               dir = 'up';
+            }
+         }
+         else
+         {
+            dir = 'left';
+         }
+
+         /* Create a new Path (or replace previous path) with waypoints         */
+         /* from the pirate's current location to the click location (walking). */
+         Paths.add('pirate_walk',
+         {
+            waypoints:
+            [
+               /*  x, y */
+               [ pirLoc['x'], pirLoc['y'] ],
+               [ pageX, pageY ]
+            ]
+         });
+
+         piratePath = Paths.instantiate('pirate_walk',
+         {
+            automatic: true,
+            repeats:   false,
+            closeLoop: false,
+            reverses:  false,
+            curve:     'linear',
+            intervals: 
+            [
+               1
+            ],
+            groups:
+            [
+               dir
+            ]
+         });
+      };
+
       window.onload = function() {
          Enlil.startFPS();
          Enlil.registerRunLoop(advance);
+         Enlil.addEventHandler(document, "keydown", arrowHandler)
+         Enlil.addEventHandler(document, "click",   clickHandler)
          Enlil.start(60);
       }
    </script>
