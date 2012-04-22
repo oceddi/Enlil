@@ -5,7 +5,7 @@ Current Feature Set:
 
 - Parse sprite sheets into groupings of animations (i.e. walk, run, fly, jump, etc).
 - Cycle through various animation groupings during draw calls.
-- Sprite movement can be controlled directly by setting screen coordinates or movement paths can be pre-defined and and
+- Sprite movement can be controlled directly by setting screen coordinates or movement paths can be pre-defined and
   interpolated paths (tweening) can queried at varying time intervals for coordinates.
 
 
