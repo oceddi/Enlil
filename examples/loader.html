@@ -1,42 +1,15 @@
 <html>
    <head>
-      <script type="text/javascript" src="../lib/enlil.js"></script>
-      <script type="text/javascript" src="../lib/loader.js"></script>
-      <script type="text/javascript" src="../lib/actor.js"></script>
-      <script type="text/javascript" src="../lib/sheets.js"></script>
-      <script type="text/javascript" src="../lib/path.js"></script>      
-      <script type="text/javascript" src="../lib/animator.js"></script>
+      <script data-main="../lib/main" src="../lib/require.js"></script>
    </head>
    <body>
-   <h1>Loader Test Page</h1>
+      <h1>Loader Test Page</h1>
 
-   <div id='version'></div> 
-   <div id='fps'></div>
-   <div id='stage'></div>
+      <div id='version'></div> 
+      <div id='fps'></div>
+      <div id='stage'></div>
 
    </body>
 
-   <script type="text/javascript">
 
-      var advance = function() {
-         Enlil.drawFrame();
-         Enlil.tick();
-         fps.innerHTML = 'FPS: ' + Enlil.fps;
-      };
-
-      var run = function () {
-         Enlil.startFPS();
-         Enlil.registerRunLoop(advance);
-         Enlil.start(30);
-      };
-
-
-
-      window.onload = function() {
-
-         /* package is defined in testpackage.json file. */
-         Enlil.loadPackage("testpackage.json", 'stage', run);
-      };
-
-   </script>
 </html>

@@ -1,12 +1,6 @@
 <html>
    <head>
-      <script type="text/javascript" src="../lib/enlil.js"></script>
-      <script type="text/javascript" src="../lib/actor.js"></script>
-      <script type="text/javascript" src="../lib/sheets.js"></script>
-      <script type="text/javascript" src="../lib/path.js"></script>      
-      <script type="text/javascript" src="../lib/animator.js"></script>
-      <script type="text/javascript" src="../lib/input.js"></script>
-   </head>
+      <script src="../lib/require.js"></script>
    <body>
    <h1>Paths Test Page</h1>
 
@@ -20,405 +14,411 @@
    </body>
 
    <script type="text/javascript">
-      var ver   = document.getElementById('version');
-      var fps   = document.getElementById('fps');
-      var animCount  = 0;
 
-      var advance = function() {
-         var locations    = Paths.interpolateAll();
-         var monIfritId   = Actors.getIdForName('monIfrit');
-         var monBahamutId = Actors.getIdForName('monBahamut');
-         var circleBatId  = Actors.getIdForName('circleBat');
-         var pirateId     = Actors.getIdForName('pirate');
+      require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets'], function(Enlil, Actors, Input, Paths, Sheets) {
 
-         Actors.drawGroup(monIfritId,   locations[pathBoxSlow].gid, animCount % 4, locations[pathBoxSlow].x, locations[pathBoxSlow].y);
-         Actors.drawGroup(monBahamutId, locations[pathBoxFast].gid, animCount % 4, locations[pathBoxFast].x, locations[pathBoxFast].y);
+         var ver   = document.getElementById('version');
+         var fps   = document.getElementById('fps');
+         var animCount  = 0;
 
-         if(!Paths.hasStopped(piratePath))
-            Actors.drawGroup(pirateId,     locations[piratePath].gid,  animCount % 4, locations[piratePath].x,  locations[piratePath].y);
-         else
-            Actors.drawGroup(pirateId,     locations[piratePath].gid,  0,             locations[piratePath].x,  locations[piratePath].y);
+         var advance = function() {
+            var locations    = Paths.interpolateAll();
+            var monIfritId   = Actors.getIdForName('monIfrit');
+            var monBahamutId = Actors.getIdForName('monBahamut');
+            var circleBatId  = Actors.getIdForName('circleBat');
+            var pirateId     = Actors.getIdForName('pirate');
 
-         if(locations[circleBatId].gid)
-            Actors.drawGroup(circleBatId,  locations[pathCircle].gid,  animCount % 4, locations[pathPacing].x+locations[pathCircle].x,  locations[pathPacing].y+locations[pathCircle].y);
+            Actors.drawGroup(monIfritId,   locations[pathBoxSlow].gid, animCount % 4, locations[pathBoxSlow].x, locations[pathBoxSlow].y);
+            Actors.drawGroup(monBahamutId, locations[pathBoxFast].gid, animCount % 4, locations[pathBoxFast].x, locations[pathBoxFast].y);
+
+            if(!Paths.hasStopped(piratePath))
+               Actors.drawGroup(pirateId,     locations[piratePath].gid,  animCount % 4, locations[piratePath].x,  locations[piratePath].y);
+            else
+               Actors.drawGroup(pirateId,     locations[piratePath].gid,  0,             locations[piratePath].x,  locations[piratePath].y);
+
+            if(locations[circleBatId].gid)
+               Actors.drawGroup(circleBatId,  locations[pathCircle].gid,  animCount % 4, locations[pathPacing].x+locations[pathCircle].x,  locations[pathPacing].y+locations[pathCircle].y);
 
 
-         if(Paths.hasStopped(pathPacing))
-         {
-            if(Paths.hasStopped(pathCircle))
+            if(Paths.hasStopped(pathPacing))
             {
-               /* Start a new circle at the end of each waypoint of the pacing path. */
-               if(Paths.runCount(pathCircle) == Paths.waypointCount(pathPacing))
+               if(Paths.hasStopped(pathCircle))
                {
-                  Paths.reset(pathCircle);
-               }
-               else /* Finished circle, start the next pacing path waypoint. */
-               {
-                  Paths.resume(pathPacing);
+                  /* Start a new circle at the end of each waypoint of the pacing path. */
+                  if(Paths.runCount(pathCircle) == Paths.waypointCount(pathPacing))
+                  {
+                     Paths.reset(pathCircle);
+                  }
+                  else /* Finished circle, start the next pacing path waypoint. */
+                  {
+                     Paths.resume(pathPacing);
+                  }
                }
             }
-         }
 
-         Enlil.tick();
-         animCount++;
-         fps.innerHTML = 'FPS: ' + Enlil.fps;
-      };
-
-      Paths.add('box',
-      {
-         waypoints:
-         [
-            /*  x, y */
-            [   0, 300 ],
-            [ 860, 300 ],
-            [ 860, 660 ],
-            [   0, 660 ]
-         ]
-      });
-
-      var pathBoxSlow = Paths.instantiate('box',
-         {
-            automatic: true,
-            repeats:   true,
-            closeLoop: true,
-            reverses:  false,
-            curve:     'linear',
-            intervals:
-            [
-               20,
-               2,
-               16,
-               2
-            ],
-            groups:
-            [
-               'right',
-               'down',
-               'left',
-               'up'
-            ]
-         }
-      );
-
-      var pathBoxFast = Paths.instantiate('box',
-         {
-            automatic: true,
-            repeats:   true,
-            closeLoop: true,
-            reverses:  false,
-            curve:     'linear',
-            intervals:
-            [
-               10,
-               1,
-               8,
-               1
-            ],
-            groups:
-            [
-               'right',
-               'down',
-               'left',
-               'up'
-            ]
-         }
-      );
-
-      /* Do an animation flying in a circle layered on top another one going back and forth. */
-      var circlepoints    = [];
-      var circleintervals = [];
-      var circlegroups    = [];
-
-      for(var i=0; i<360; i+=10)
-      {
-         var x = Math.cos((i*Math.PI)/180)*100;
-         var y = Math.sin((i*Math.PI)/180)*100;
-         circlepoints.push( [ x, y ] );
-         circleintervals.push(0.1);
-
-         /* Have the animation face outward based on position in circle. */
-         if(i < 45 || i >= 315)
-         {
-            circlegroups.push('right');
-         }
-         else if(i < 135)
-         {
-            circlegroups.push('down');
-         }
-         else if(i < 225)
-         {
-            circlegroups.push('left');
-         }
-         else if(i < 315)
-         {
-            circlegroups.push('up');
-         }
-      }
-
-      Paths.add('circle',
-      {
-         waypoints: circlepoints
-      });
-
-      Paths.add('pacing',
-      {
-         waypoints:
-         [
-            /*  x, y */
-            [   0, 300 ],
-            [ 400, 300 ],
-            [ 860, 300 ]
-         ]
-      });
-
-      Paths.add('pirate_walk',
-      {
-         waypoints:
-         [
-            /*  x, y */
-            [ 50, 50 ],
-            [ 100, 50 ]
-         ]
-      });
-
-      var pathCircle = Paths.instantiate('circle',
-         {
-            automatic: true,
-            repeats:   false,
-            closeLoop: true,
-            reverses:  false,
-            curve:     'linear',
-            intervals: circleintervals,
-            groups:    circlegroups
-         }
-      );
-
-      var pathPacing = Paths.instantiate('pacing',
-         {
-            automatic: false,
-            repeats:   true,
-            closeLoop: true,
-            reverses:  false,
-            curve:     'linear',
-            intervals: 
-            [
-               2,
-               2,
-               2
-            ]
-         }
-      );
-
-      var piratePath = Paths.instantiate('pirate_walk',
-         {
-            automatic: true,
-            repeats:   false,
-            closeLoop: false,
-            reverses:  false,
-            curve:     'linear',
-            intervals: 
-            [
-               5
-            ],
-            groups:
-            [
-               'right'
-            ]
-         }
-      );
-
-      Sheets.add('ifrit',   
-      {
-         resource:'assets/ifrit.png',
-         cwidth:80,
-         cheight:80,
-         groups:
-         {
-            'down'  : [  0,  3 ],
-            'left'  : [  4,  7 ],
-            'right' : [  8, 11 ],
-            'up'    : [ 12, 15 ]
-         }
-      });
-
-      Sheets.add('bahamut',
-      {
-         resource:'assets/bahamut.png',
-         cwidth:96,
-         cheight:96,
-         groups:
-         {
-            'down'  : [  0,  3 ],
-            'left'  : [  4,  7 ],
-            'right' : [  8, 11 ],
-            'up'    : [ 12, 15 ]
-         }
-      });
-
-      Sheets.add('goldbat',
-      {
-         resource:'assets/goldbat.png',
-         cwidth:32,
-         cheight:48,
-         groups:
-         {
-            'down'  : [  0,  3 ],
-            'left'  : [  4,  7 ],
-            'right' : [  8, 11 ],
-            'up'    : [ 12, 15 ]
-         }
-      });
-
-      Sheets.add('pirate',
-      {
-         resource:'assets/pirate_m2.png',
-         cwidth:32,
-         cheight:48,
-         groups:
-         {
-            'down'  : [  0,  3 ],
-            'left'  : [  4,  7 ],
-            'right' : [  8, 11 ],
-            'up'    : [ 12, 15 ]  
-         }
-      });
-
-      Actors.add( 
-         {
-            name : 'monIfrit',
-         sheetid : 'ifrit',
-             div : 'div1' 
-         }
-      );
-
-      Actors.add( 
-         {
-            name : 'monBahamut',
-         sheetid : 'bahamut',
-             div : 'div2' 
-         }
-      );
-
-      Actors.add( 
-         {
-            name : 'circleBat',
-         sheetid : 'goldbat',
-             div : 'div3' 
-         }
-      );
-
-      Actors.add(
-         {  
-            name : 'pirate',
-         sheetid : 'pirate',
-            div  : 'div4'
-         }
-      );
-
-      ver.innerHTML = 'Version: ' + Enlil.version;
-
-      var arrowHandler = function keyDown (event) {
-         var arrowKeyCodes = {
-            37: "left",   // left
-            38: "up",     // up
-            39: "right",  // right
-            40: "down"    // down
+            Enlil.tick();
+            animCount++;
+            fps.innerHTML = 'FPS: ' + Enlil.fps;
          };
 
-         if(arrowKeyCodes[event.keyCode]) {
-            event.stop();
-            console.log("ARROW!!!" + arrowKeyCodes[event.keyCode]);
-
-            if( event.shiftKey )
-            {
-               console.log (" with SHIFT.");
-            }
-
-            if( event.ctrlKey )
-            {
-               console.log (" with CTRL.");
-            }
-
-            if( event.altKey )
-            {
-               console.log (" with ALT.");
-            }
-         }
-      };
-
-      var clickHandler = function userClicked (event) {
-         var target = event.target || event.srcElement;
-         var pageX = event.pageX;
-         var pageY = event.pageY;
-         var pirLoc;
-         var dir;
-
-         if(pageX == undefined) {
-            pageX = event.clientX + document.body.scrollLeft;
-            pageY = event.clientY + document.body.scrollTop;
-         }
-         
-         console.log("CLICK!!! X:" + pageX + " Y: " + pageY);
-
-         pirLoc = Paths.interpolate(piratePath);
-         Paths.stop(piratePath);
-
-         if( (pageX - pirLoc['x']) > 40)
+         Paths.add('box',
          {
-            dir = 'right';
-         }
-         else if (( pageX - pirLoc['x']) > -40)
-         {
-            if((pageY - pirLoc['y']) > 0)
+            waypoints:
+            [
+               /*  x, y */
+               [   0, 300 ],
+               [ 860, 300 ],
+               [ 860, 660 ],
+               [   0, 660 ]
+            ]
+         });
+
+         var pathBoxSlow = Paths.instantiate('box',
             {
-               dir = 'down';
+               automatic: true,
+               repeats:   true,
+               closeLoop: true,
+               reverses:  false,
+               curve:     'linear',
+               intervals:
+               [
+                  20,
+                  2,
+                  16,
+                  2
+               ],
+               groups:
+               [
+                  'right',
+                  'down',
+                  'left',
+                  'up'
+               ]
             }
-            else
+         );
+
+         var pathBoxFast = Paths.instantiate('box',
             {
-               dir = 'up';
+               automatic: true,
+               repeats:   true,
+               closeLoop: true,
+               reverses:  false,
+               curve:     'linear',
+               intervals:
+               [
+                  10,
+                  1,
+                  8,
+                  1
+               ],
+               groups:
+               [
+                  'right',
+                  'down',
+                  'left',
+                  'up'
+               ]
             }
-         }
-         else
+         );
+
+         /* Do an animation flying in a circle layered on top another one going back and forth. */
+         var circlepoints    = [];
+         var circleintervals = [];
+         var circlegroups    = [];
+
+         for(var i=0; i<360; i+=10)
          {
-            dir = 'left';
+            var x = Math.cos((i*Math.PI)/180)*100;
+            var y = Math.sin((i*Math.PI)/180)*100;
+            circlepoints.push( [ x, y ] );
+            circleintervals.push(0.1);
+
+            /* Have the animation face outward based on position in circle. */
+            if(i < 45 || i >= 315)
+            {
+               circlegroups.push('right');
+            }
+            else if(i < 135)
+            {
+               circlegroups.push('down');
+            }
+            else if(i < 225)
+            {
+               circlegroups.push('left');
+            }
+            else if(i < 315)
+            {
+               circlegroups.push('up');
+            }
          }
 
-         /* Create a new Path (or replace previous path) with waypoints         */
-         /* from the pirate's current location to the click location (walking). */
+         Paths.add('circle',
+         {
+            waypoints: circlepoints
+         });
+
+         Paths.add('pacing',
+         {
+            waypoints:
+            [
+               /*  x, y */
+               [   0, 300 ],
+               [ 400, 300 ],
+               [ 860, 300 ]
+            ]
+         });
+
          Paths.add('pirate_walk',
          {
             waypoints:
             [
                /*  x, y */
-               [ pirLoc['x'], pirLoc['y'] ],
-               [ pageX, pageY ]
+               [ 50, 50 ],
+               [ 100, 50 ]
             ]
          });
 
-         piratePath = Paths.instantiate('pirate_walk',
+         var pathCircle = Paths.instantiate('circle',
+            {
+               automatic: true,
+               repeats:   false,
+               closeLoop: true,
+               reverses:  false,
+               curve:     'linear',
+               intervals: circleintervals,
+               groups:    circlegroups
+            }
+         );
+
+         var pathPacing = Paths.instantiate('pacing',
+            {
+               automatic: false,
+               repeats:   true,
+               closeLoop: true,
+               reverses:  false,
+               curve:     'linear',
+               intervals: 
+               [
+                  2,
+                  2,
+                  2
+               ]
+            }
+         );
+
+         var piratePath = Paths.instantiate('pirate_walk',
+            {
+               automatic: true,
+               repeats:   false,
+               closeLoop: false,
+               reverses:  false,
+               curve:     'linear',
+               intervals: 
+               [
+                  5
+               ],
+               groups:
+               [
+                  'right'
+               ]
+            }
+         );
+
+         Sheets.add('ifrit',   
          {
-            automatic: true,
-            repeats:   false,
-            closeLoop: false,
-            reverses:  false,
-            curve:     'linear',
-            intervals: 
-            [
-               1
-            ],
+            resource:'assets/ifrit.png',
+            cwidth:80,
+            cheight:80,
             groups:
-            [
-               dir
-            ]
+            {
+               'down'  : [  0,  3 ],
+               'left'  : [  4,  7 ],
+               'right' : [  8, 11 ],
+               'up'    : [ 12, 15 ]
+            }
          });
-      };
 
-      window.onload = function() {
-         Enlil.startFPS();
-         Enlil.registerRunLoop(advance);
-         Enlil.addEventHandler(document, "keydown", arrowHandler)
-         Enlil.addEventHandler(document, "click",   clickHandler)
-         Enlil.start(60);
-      }
+         Sheets.add('bahamut',
+         {
+            resource:'assets/bahamut.png',
+            cwidth:96,
+            cheight:96,
+            groups:
+            {
+               'down'  : [  0,  3 ],
+               'left'  : [  4,  7 ],
+               'right' : [  8, 11 ],
+               'up'    : [ 12, 15 ]
+            }
+         });
+
+         Sheets.add('goldbat',
+         {
+            resource:'assets/goldbat.png',
+            cwidth:32,
+            cheight:48,
+            groups:
+            {
+               'down'  : [  0,  3 ],
+               'left'  : [  4,  7 ],
+               'right' : [  8, 11 ],
+               'up'    : [ 12, 15 ]
+            }
+         });
+
+         Sheets.add('pirate',
+         {
+            resource:'assets/pirate_m2.png',
+            cwidth:32,
+            cheight:48,
+            groups:
+            {
+               'down'  : [  0,  3 ],
+               'left'  : [  4,  7 ],
+               'right' : [  8, 11 ],
+               'up'    : [ 12, 15 ]  
+            }
+         });
+
+         Actors.add( 
+            {
+               name : 'monIfrit',
+            sheetid : 'ifrit',
+                div : 'div1' 
+            }
+         );
+
+         Actors.add( 
+            {
+               name : 'monBahamut',
+            sheetid : 'bahamut',
+                div : 'div2' 
+            }
+         );
+
+         Actors.add( 
+            {
+               name : 'circleBat',
+            sheetid : 'goldbat',
+                div : 'div3' 
+            }
+         );
+
+         Actors.add(
+            {  
+               name : 'pirate',
+            sheetid : 'pirate',
+               div  : 'div4'
+            }
+         );
+
+         ver.innerHTML = 'Version: ' + Enlil.version;
+
+         var arrowHandler = function keyDown (event) {
+            var arrowKeyCodes = {
+               37: "left",   // left
+               38: "up",     // up
+               39: "right",  // right
+               40: "down"    // down
+            };
+
+            if(arrowKeyCodes[event.keyCode]) {
+               event.stop();
+               console.log("ARROW!!!" + arrowKeyCodes[event.keyCode]);
+
+               if( event.shiftKey )
+               {
+                  console.log (" with SHIFT.");
+               }
+
+               if( event.ctrlKey )
+               {
+                  console.log (" with CTRL.");
+               }
+
+               if( event.altKey )
+               {
+                  console.log (" with ALT.");
+               }
+            }
+         };
+
+         var clickHandler = function userClicked (event) {
+            var target = event.target || event.srcElement;
+            var pageX = event.pageX;
+            var pageY = event.pageY;
+            var pirLoc;
+            var dir;
+
+            if(pageX == undefined) {
+               pageX = event.clientX + document.body.scrollLeft;
+               pageY = event.clientY + document.body.scrollTop;
+            }
+            
+            console.log("CLICK!!! X:" + pageX + " Y: " + pageY);
+
+            pirLoc = Paths.interpolate(piratePath);
+            Paths.stop(piratePath);
+
+            if( (pageX - pirLoc['x']) > 40)
+            {
+               dir = 'right';
+            }
+            else if (( pageX - pirLoc['x']) > -40)
+            {
+               if((pageY - pirLoc['y']) > 0)
+               {
+                  dir = 'down';
+               }
+               else
+               {
+                  dir = 'up';
+               }
+            }
+            else
+            {
+               dir = 'left';
+            }
+
+            /* Create a new Path (or replace previous path) with waypoints         */
+            /* from the pirate's current location to the click location (walking). */
+            Paths.add('pirate_walk',
+            {
+               waypoints:
+               [
+                  /*  x, y */
+                  [ pirLoc['x'], pirLoc['y'] ],
+                  [ pageX, pageY ]
+               ]
+            });
+
+            piratePath = Paths.instantiate('pirate_walk',
+            {
+               automatic: true,
+               repeats:   false,
+               closeLoop: false,
+               reverses:  false,
+               curve:     'linear',
+               intervals: 
+               [
+                  1
+               ],
+               groups:
+               [
+                  dir
+               ]
+            });
+         };
+
+         require(['../lib/domReady'], function (domReady) {
+            domReady(function () {
+               Enlil.startFPS();
+               Enlil.registerRunLoop(advance);
+               Enlil.addEventHandler(document, "keydown", arrowHandler)
+               Enlil.addEventHandler(document, "click",   clickHandler)
+               Enlil.start(60);
+            });
+         });
+      });
    </script>
 </html>
