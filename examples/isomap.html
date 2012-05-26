@@ -13,6 +13,20 @@
    <script type="text/javascript">
       var xAnchor = 32;
       var yAnchor = 16;
+      var MOUSEPAN_SIZE = 150;
+      var MOUSEPAN_SIZE_FAST = 50;
+      var MOUSEPAN_STEP = 1;
+      var MOUSEPAN_STEP_FAST = 5;
+      var PAN_DELAY  = 1;
+
+      var mapWidth   = 2048;
+      var mapHeight  = 1024;
+      var panX       = 0;
+      var panY       = 0;
+      var panDelay   = PAN_DELAY;
+
+      
+
 
       function fillMap(cols, rows, tileNumber) {
          var ret = [];
@@ -30,29 +44,101 @@
 
       require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets','../lib/isometric'], function(Enlil, Actors, Input, Paths, Sheets, Isometric) {
       
+         function mouseMove(event) {
+                  if(event.clientX > (Isometric.windowWidth()-MOUSEPAN_SIZE))
+                  {
+                     if(event.clientX > (Isometric.windowWidth()-MOUSEPAN_SIZE_FAST))
+                        panX=MOUSEPAN_STEP_FAST;
+                     else
+                        panX=MOUSEPAN_STEP;
+                  }
+                  else if(event.clientX < MOUSEPAN_SIZE)
+                  {
+                     if(event.clientX < MOUSEPAN_SIZE_FAST)
+                        panX=-(MOUSEPAN_STEP_FAST);
+                     else
+                        panX=-MOUSEPAN_STEP;
+                  }
+                  else
+                  {
+                     panX = 0;
+                  }
 
+                  if(event.clientY > (Isometric.windowHeight()-MOUSEPAN_SIZE))
+                  {
+                     if(event.clientY > (Isometric.windowHeight()-MOUSEPAN_SIZE_FAST))
+                        panY=MOUSEPAN_STEP_FAST;
+                     else
+                        panY=MOUSEPAN_STEP;
+                  }
+                  else if(event.clientY < MOUSEPAN_SIZE)
+                  {
+                     if(event.clientY < MOUSEPAN_SIZE_FAST)
+                        panY=-MOUSEPAN_STEP_FAST;
+                     else
+                        panY=-MOUSEPAN_STEP;
+                  }
+                  else
+                  {
+                     panY = 0;
+                  }
+               };
+
+
+         function updatePositions() {
+            var redraw = false;
+
+            if(panDelay > 0)
+               panDelay--;
+            else
+            {
+               if(panX & ((xAnchor + panX) >= 32) & ((xAnchor + panX) <= (mapWidth-Isometric.windowWidth()-32)))
+               {
+                  xAnchor += panX;
+                  redraw = true;
+               }
+
+               if(panY & ((yAnchor + panY) >= 16) & ((yAnchor + panY) <= (mapHeight-Isometric.windowHeight())))
+               {
+                  yAnchor += panY;
+                  redraw = true;
+               }
+               panDelay = PAN_DELAY;
+            }
+
+            return redraw;
+         };
 
          var advance = function() {
-            Isometric.drawViewport(xAnchor, yAnchor);
+            var redraw = false;
+
+            redraw = updatePositions();
+
+            if(redraw)
+               Isometric.drawViewport(xAnchor, yAnchor);
+   
             Enlil.tick();
             fps.innerHTML = 'FPS: ' + Enlil.fps;
          };
 
          require(['../lib/domReady'], function (domReady){
                domReady(function () {
-
-                  Isometric.init('div1', Isometric.FULLSCREEN, 64, 32, 2048, 1024, 1024, 512, './assets/TileAtlas.png', './assets/TileAtlas.json', function() {
+                  var tiles = [0, 2, 3, 5];
+                  Isometric.init('div1', Isometric.FULLSCREEN, 64, 32, mapWidth, mapHeight, 1024, 512, './assets/TileAtlas.png', './assets/TileAtlas.json', function() {
 
                      /* Populate 4 sectors with random tiles. */
                      for(var i = 0; i<4; i++) {
-                        Isometric.setMapData(i, { 'mapData' : fillMap(64, 32, i) });
-                        console.log('blah');
+                        Isometric.setMapData(i, { 'mapData' : fillMap(64, 32, tiles[i]) });
+                        Isometric.drawViewport(xAnchor, yAnchor);
                      }
                   });
 
+                  document.body.onmousemove = mouseMove;
+
+
                   Enlil.startFPS();
                   Enlil.registerRunLoop(advance);
-                  Enlil.start(60);
+                  Enlil.start(5);
                });
             });
          });
