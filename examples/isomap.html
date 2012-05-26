@@ -1,0 +1,60 @@
+<html>
+   <head>
+      <script src="../lib/require.js"></script>
+   <body>
+   <h1>Isometric Tile Test Page</h1>
+
+   <div id='version'></div> 
+   <div id='fps'></div> 
+   <div id='div1'></div>
+
+   </body>
+
+   <script type="text/javascript">
+      var xAnchor = 32;
+      var yAnchor = 16;
+
+      function fillMap(cols, rows, tileNumber) {
+         var ret = [];
+
+         for(var y=0; y<rows; y++) {
+            var row = [];
+            for(var x=0; x<cols; x++) {
+               //row.push(Math.floor(Math.random() * 5));
+               row.push(tileNumber);
+            }
+            ret.push(row);
+         }
+         return ret;
+      };
+
+      require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets','../lib/isometric'], function(Enlil, Actors, Input, Paths, Sheets, Isometric) {
+      
+
+
+         var advance = function() {
+            Isometric.drawViewport(xAnchor, yAnchor);
+            Enlil.tick();
+            fps.innerHTML = 'FPS: ' + Enlil.fps;
+         };
+
+         require(['../lib/domReady'], function (domReady){
+               domReady(function () {
+
+                  Isometric.init('div1', Isometric.FULLSCREEN, 64, 32, 2048, 1024, 1024, 512, './assets/TileAtlas.png', './assets/TileAtlas.json', function() {
+
+                     /* Populate 4 sectors with random tiles. */
+                     for(var i = 0; i<4; i++) {
+                        Isometric.setMapData(i, { 'mapData' : fillMap(64, 32, i) });
+                        console.log('blah');
+                     }
+                  });
+
+                  Enlil.startFPS();
+                  Enlil.registerRunLoop(advance);
+                  Enlil.start(60);
+               });
+            });
+         });
+   </script>
+</html>
