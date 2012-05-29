@@ -1,14 +1,38 @@
-This javascript library can be used to animate arbitrary images contained in sprite sheets using HTML5 mechanisms (canvas).  
-This could be used as a component in an HTML5 game or for whatever sprite animation project you choose.
+Welcome to Enlil, a javascript HTML5 game library.  The intent of Enlil is to package up and provide resources to
+HTML5 game developers making 2D sprite based games.
 
-Current Feature Set:
+Enlil Current Feature Set:
 
-- Parse sprite sheets into groupings of animations (i.e. walk, run, fly, jump, etc).
+- Uses require.js packaging scheme to organize source code.
+- Parses sprite sheets into groupings of animations (i.e. walk, run, fly, jump, etc).
 - Cycle through various animation groupings during draw calls.
 - Sprite movement can be controlled directly by setting screen coordinates or movement paths can be pre-defined and
   interpolated paths (tweening) can queried at varying time intervals for coordinates.
+- Rudimentary json loader of game packages.
+- Isometric tile engine that loads from json and scrolls as mouse is moved.
+
+
+Example use of this library can be cound under the the "/examples" folder:
+
+- paths.html - Demonstrates loading sprite sheets, animating, sprite movement and the mouse input support.  Clicking
+  on the screen will cause the pirate sprite to move towards the click.
+
+- loader.html - Demonstrates the loader which is an early attempt to package up the game definition into a concise
+  json grouping (see testpackage.json).  The intent is game makers would use some other tool to create this package
+  and Enlil could parse and "run" the package to load your game.  This feature is a work in progress.
+
+- isomap.html - Demonstrates loading and displaying and isometric tile map.  Can be run in fullscreen mode and moving
+  the mouse to the edges of the screen/browser will cause the map to scroll.
 
 
 Special Thanks:
 
 Sprite sheets in the example directory courtesy of Sithjester at http://untamed.wild-refuge.net/rpgxp.php
+
+Questions/Feedback:
+
+oceddi@gmail.com
+
+Twitter:
+
+twitter.com/oceddi
