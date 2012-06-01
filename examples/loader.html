@@ -1,6 +1,6 @@
 <html>
    <head>
-      <script data-main="../lib/main" src="../lib/require.js"></script>
+      <script src="../lib/require.js"></script>
    </head>
    <body>
       <h1>Loader Test Page</h1>
@@ -10,6 +10,27 @@
       <div id='stage'></div>
 
    </body>
+   <script type="text/javascript">
+	    require(["../lib/enlil"], function(Enlil) {
+		    var advance = function() {
+		       Enlil.drawFrame();
+		       Enlil.tick();
+		       fps.innerHTML = 'FPS: ' + Enlil.fps;
+		    };
 
+		    var run = function () {
+		       Enlil.startFPS();
+		       Enlil.registerRunLoop(advance);
+		       Enlil.start(30);
+		    };
+
+			require(['../lib/domReady'], function (domReady) {
+			    domReady(function () {
+		          /* package is defined in testpackage.json file. */
+		          Enlil.loadPackage("testpackage.json", 'stage', run);
+		        });
+		    });
+		});
+   </script>
 
 </html>
