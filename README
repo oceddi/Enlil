@@ -8,6 +8,7 @@ Enlil Current Feature Set:
 - Sprite movement can be controlled directly by setting screen coordinates or movement paths can be pre-defined and interpolated paths (tweening) can queried at varying time intervals for coordinates.
 - Rudimentary json loader of game packages.
 - Isometric tile engine that loads from json and scrolls as mouse is moved.
+- Speech bubbles that can scale in size.
 
 
 Example use of this library can be cound under the the "/examples" folder:
@@ -18,6 +19,8 @@ Example use of this library can be cound under the the "/examples" folder:
   and Enlil could parse and "run" the package to load your game.  This feature is a work in progress.
 
 - isomap.html - Demonstrates loading and displaying and isometric tile map.  Can be run in fullscreen mode and moving the mouse to the edges of the screen/browser will cause the map to scroll.
+
+- uitest.html - Demonstrates speech bubble ui elements.  Click on screen to see some random speech bubbles getting placed where you clicked (random text and size).
 
 
 Special Thanks:

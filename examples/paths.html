@@ -57,7 +57,11 @@
             }
 
             Enlil.tick();
-            animCount++;
+            
+            /* Don't toggle animations every frame, that's too fast.  Do it every 5 frames. */
+            if(Enlil.frameCount % 5 == 0)
+               animCount++;
+
             fps.innerHTML = 'FPS: ' + Enlil.fps;
          };
 
@@ -416,7 +420,7 @@
                Enlil.registerRunLoop(advance);
                Enlil.addEventHandler(document, "keydown", arrowHandler)
                Enlil.addEventHandler(document, "click",   clickHandler)
-               Enlil.start(60);
+               Enlil.start();
             });
          });
       });
