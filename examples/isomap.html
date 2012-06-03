@@ -25,9 +25,6 @@
       var panY       = 0;
       var panDelay   = PAN_DELAY;
 
-      
-
-
       function fillMap(cols, rows, tileNumber) {
          var ret = [];
 
@@ -133,12 +130,10 @@
                      }
                   });
 
-                  document.body.onmousemove = mouseMove;
-
-
                   Enlil.startFPS();
                   Enlil.registerRunLoop(advance);
-                  Enlil.start(5);
+                  Enlil.addEventHandler(document.body, "mousemove", mouseMove);
+                  Enlil.start();
                });
             });
          });
