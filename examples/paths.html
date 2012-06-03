@@ -19,49 +19,50 @@
 
          var ver   = document.getElementById('version');
          var fps   = document.getElementById('fps');
-         var animCount  = 0;
 
          var advance = function() {
-            var locations    = Paths.interpolateAll();
-            var monIfritId   = Actors.getIdForName('monIfrit');
-            var monBahamutId = Actors.getIdForName('monBahamut');
-            var circleBatId  = Actors.getIdForName('circleBat');
-            var pirateId     = Actors.getIdForName('pirate');
 
-            Actors.drawGroup(monIfritId,   locations[pathBoxSlow].gid, animCount % 4, locations[pathBoxSlow].x, locations[pathBoxSlow].y);
-            Actors.drawGroup(monBahamutId, locations[pathBoxFast].gid, animCount % 4, locations[pathBoxFast].x, locations[pathBoxFast].y);
-
-            if(!Paths.hasStopped(piratePath))
-               Actors.drawGroup(pirateId,     locations[piratePath].gid,  animCount % 4, locations[piratePath].x,  locations[piratePath].y);
-            else
-               Actors.drawGroup(pirateId,     locations[piratePath].gid,  0,             locations[piratePath].x,  locations[piratePath].y);
-
-            if(locations[circleBatId].gid)
-               Actors.drawGroup(circleBatId,  locations[pathCircle].gid,  animCount % 4, locations[pathPacing].x+locations[pathCircle].x,  locations[pathPacing].y+locations[pathCircle].y);
-
-
-            if(Paths.hasStopped(pathPacing))
+            /* Don't interpolate animations every frame, that's too fast.  Do it every 2 frames. */
+            if(Enlil.frameCount % 2 == 0)
             {
-               if(Paths.hasStopped(pathCircle))
+               var locations    = Paths.interpolateAll();
+               var monIfritId   = Actors.getIdForName('monIfrit');
+               var monBahamutId = Actors.getIdForName('monBahamut');
+               var circleBatId  = Actors.getIdForName('circleBat');
+               var pirateId     = Actors.getIdForName('pirate');
+
+               console.log(locations[pathBoxFast].x + ' ' + locations[pathBoxFast].y);
+
+               Actors.drawGroup(monIfritId,   locations[pathBoxSlow].gid, Enlil.animCount % 4, locations[pathBoxSlow].x, locations[pathBoxSlow].y);
+               Actors.drawGroup(monBahamutId, locations[pathBoxFast].gid, Enlil.animCount % 4, locations[pathBoxFast].x, locations[pathBoxFast].y);
+
+               if(!Paths.hasStopped(piratePath))
+                  Actors.drawGroup(pirateId,     locations[piratePath].gid,  Enlil.animCount % 4, locations[piratePath].x,  locations[piratePath].y);
+               else
+                  Actors.drawGroup(pirateId,     locations[piratePath].gid,  0,             locations[piratePath].x,  locations[piratePath].y);
+
+               if(locations[circleBatId].gid)
+                  Actors.drawGroup(circleBatId,  locations[pathCircle].gid,  Enlil.animCount % 4, locations[pathPacing].x+locations[pathCircle].x,  locations[pathPacing].y+locations[pathCircle].y);
+
+
+               if(Paths.hasStopped(pathPacing))
                {
-                  /* Start a new circle at the end of each waypoint of the pacing path. */
-                  if(Paths.runCount(pathCircle) == Paths.waypointCount(pathPacing))
+                  if(Paths.hasStopped(pathCircle))
                   {
-                     Paths.reset(pathCircle);
-                  }
-                  else /* Finished circle, start the next pacing path waypoint. */
-                  {
-                     Paths.resume(pathPacing);
+                     /* Start a new circle at the end of each waypoint of the pacing path. */
+                     if(Paths.runCount(pathCircle) == Paths.waypointCount(pathPacing))
+                     {
+                        Paths.reset(pathCircle);
+                     }
+                     else /* Finished circle, start the next pacing path waypoint. */
+                     {
+                        Paths.resume(pathPacing);
+                     }
                   }
                }
             }
-
             Enlil.tick();
             
-            /* Don't toggle animations every frame, that's too fast.  Do it every 5 frames. */
-            if(Enlil.frameCount % 5 == 0)
-               animCount++;
-
             fps.innerHTML = 'FPS: ' + Enlil.fps;
          };
 
