@@ -1,104 +1,104 @@
 {
-   title  : 'Test Loader',
-   author : 'Dean McKee',
-   anchor : 'stage',
-   first  : 'main',
+   "title"  : "Test Loader",
+   "author" : "Dean McKee",
+   "anchor" : "stage",
+   "first"  : "main",
 
-   assets:
+   "assets":
    {
-      backdrops :
+      "backdrops" :
       [
          {
-                  id : 'first',
-                data :
+                  "id" : "first",
+                "data" :
             {
-               resource : 'assets/blue.jpg',
-                 cwidth : 1024,
-                cheight : 720
+               "resource" : "assets/blue.jpg",
+                 "cwidth" : 1024,
+                "cheight" : 720
             },
-            relative : true
+            "relative" : true
          }
       ],
-      tiles :
+      "tiles" :
       [
       ],
-      spritesheets :
+      "spritesheets" :
       [
          {
-              id : 'bahamut',
-            data :
+              "id" : "bahamut",
+            "data" :
             {
-               resource : 'assets/bahamut.png',
-                 cwidth : 96,
-                cheight : 96,
-                 groups :
+               "resource" : "assets/bahamut.png",
+                 "cwidth" : 96,
+                "cheight" : 96,
+                 "groups" :
                {
-                  'down'  : [  0,  3 ],
-                  'left'  : [  4,  7 ],
-                  'right' : [  8, 11 ],
-                  'up'    : [ 12, 15 ]
+                  "down"  : [  0,  3 ],
+                  "left"  : [  4,  7 ],
+                  "right" : [  8, 11 ],
+                  "up"    : [ 12, 15 ]
                }
-            },
+            }
          },
          {
-              id : 'ifrit',   
-            data :
+              "id" : "ifrit",   
+            "data" :
             {
-               resource: 'assets/ifrit.png',
-                 cwidth: 80,
-                cheight: 80,
-                 groups:
+               "resource": "assets/ifrit.png",
+                 "cwidth": 80,
+                "cheight": 80,
+                 "groups":
                {
-                  'down'  : [  0,  3 ],
-                  'left'  : [  4,  7 ],
-                  'right' : [  8, 11 ],
-                  'up'    : [ 12, 15 ]
+                  "down"  : [  0,  3 ],
+                  "left"  : [  4,  7 ],
+                  "right" : [  8, 11 ],
+                  "up"    : [ 12, 15 ]
                }
-            },
+            }
          },
          {
-              id : 'goldbat',
-            data :
+              "id" : "goldbat",
+            "data" :
             {
-               resource: 'assets/goldbat.png',
-                 cwidth: 32,
-                cheight: 48,
-                 groups:
+               "resource": "assets/goldbat.png",
+                 "cwidth": 32,
+                "cheight": 48,
+                 "groups":
                {
-                  'down'  : [  0,  3 ],
-                  'left'  : [  4,  7 ],
-                  'right' : [  8, 11 ],
-                  'up'    : [ 12, 15 ]
+                  "down"  : [  0,  3 ],
+                  "left"  : [  4,  7 ],
+                  "right" : [  8, 11 ],
+                  "up"    : [ 12, 15 ]
                } 
-            },
-         },
+            }
+         }
       ],
-      wavfiles :
+      "wavfiles" :
       [
-      ],
+      ]
    },
 
-   states:
+   "states":
    {
-      'main' : 
+      "main" : 
       {
-         name: 'Start Screen',
-         backdrop: 'first',
-         actors:
+         "name": "Start Screen",
+         "backdrop": "first",
+         "actors":
          [
             {
-                name : 'JimmyBat',
-             sheetid : 'goldbat',
-               paths : 
+                "name" : "JimmyBat",
+             "sheetid" : "goldbat",
+               "paths" : 
                [
                   {
-                     id : 'line',
-                     automatic: true,
-                     repeats:   true,
-                     closeLoop: true,
-                     reverses:  true,
-                     curve:     'linear',
-                     intervals: 
+                            "id" : "line",
+                     "automatic" : true,
+                       "repeats" : true,
+                     "closeLoop" : true,
+                      "reverses" : true,
+                         "curve" : "linear",
+                     "intervals" : 
                      [
                         2,
                         2,
@@ -107,28 +107,28 @@
                         2,
                         2
                      ],
-                     groups:
+                     "groups":
                      [
-                        'right',
-                        'right',
-                        'left'
+                        "right",
+                        "right",
+                        "left"
                      ]
                   }
                ]
             },
             {
-                name : 'TommyBat',
-             sheetid : 'ifrit',
-               paths : 
+                "name" : "TommyBat",
+             "sheetid" : "ifrit",
+               "paths" : 
                [
                   {
-                     id : 'triangle',
-                     automatic: true,
-                     repeats:   true,
-                     closeLoop: true,
-                     reverses:  true,
-                     curve:     'quadratic',
-                     intervals: 
+                            "id" : "triangle",
+                     "automatic" : true,
+                       "repeats" : true,
+                     "closeLoop" : true,
+                      "reverses" : true,
+                         "curve" : "quadratic",
+                     "intervals" : 
                      [
                         2,
                         2,
@@ -139,18 +139,18 @@
                ]
             },
             {
-                name : 'FreddyBat',
-             sheetid : 'bahamut',
-               paths : 
+                "name" : "FreddyBat",
+             "sheetid" : "bahamut",
+               "paths" : 
                [
                   {
-                     id : 'box',
-                     automatic: true,
-                     repeats:   true,
-                     closeLoop: true,
-                     reverses:  true,
-                     curve:     'cubic',
-                     intervals: 
+                            "id" : "box",
+                     "automatic" : true,
+                       "repeats" : true,
+                     "closeLoop" : true,
+                      "reverses" : true,
+                         "curve" : "cubic",
+                     "intervals" : 
                      [
                         2,
                         2,
@@ -160,21 +160,20 @@
                   }
                ]
             }
-
          ],
-         paths:
+         "paths" :
          [
             {
-               id : 'line',
-               waypoints:
+               "id" : "line",
+               "waypoints" :
                [
                   [   0, 300 ],
                   [ 400, 300 ]
                ]
             },
             {
-               id : 'triangle',
-               waypoints:
+               "id" : "triangle",
+               "waypoints" :
                [
                   [   0, 300 ],
                   [ 430, 50  ],
@@ -182,16 +181,16 @@
                ]
             },
             {
-               id : 'box',
-               waypoints:
+               "id" : "box",
+               "waypoints" :
                [
                   [   0, 300 ],
                   [ 860, 300 ],
                   [ 860, 660 ],
                   [   0, 660 ]
                ]
-            },
+            }
          ]
       } 
-   },
+   }
 }
