@@ -1,0 +1,31 @@
+<html>
+	<head>
+      <script src="../lib/thirdparty/require.js"></script>
+      <script src="../lib/thirdparty/dsp-js/dsp.js"></script>
+    </head>
+    <body>
+   	   <h1>Page</h1>
+
+
+    </body>
+    <script type="text/javascript">
+    require(['../lib/enlil', '../lib/loader', '../lib/audio'], function(Enlil, Loader, Audio) {
+    	require(['../lib/domReady'], function (domReady){
+			domReady(function () {
+
+				//Enlil.loadAudio("assets/Portland Is Leaving.mp3", function (id) {
+				//	Enlil.playAudio(id, 0, false);
+				//} );
+
+				//Enlil.loadAudio("assets/Pink_Noise.wav", function (id) {
+				//	Enlil.playAudio(id, 5, false);
+				//} );
+				
+				Enlil.loadAudio("assets/blue_danube.mid", function (id) {
+					Enlil.playAudio(id, 0, false);
+				});
+			});
+        });
+    });
+    </script>
+</html>
