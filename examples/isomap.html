@@ -6,7 +6,6 @@
    <h1>Isometric Tile Test Page</h1>
 
    <div id='version'></div> 
-   <div id='fps'></div> 
    <div id='div1'></div>
 
    </body>
@@ -40,47 +39,51 @@
          return ret;
       };
 
+
+
       require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets','../lib/isometric'], function(Enlil, Actors, Input, Paths, Sheets, Isometric) {
       
          function mouseMove(event) {
-                  if(event.clientX > (Isometric.windowWidth()-MOUSEPAN_SIZE))
-                  {
-                     if(event.clientX > (Isometric.windowWidth()-MOUSEPAN_SIZE_FAST))
-                        panX=MOUSEPAN_STEP_FAST;
-                     else
-                        panX=MOUSEPAN_STEP;
-                  }
-                  else if(event.clientX < MOUSEPAN_SIZE)
-                  {
-                     if(event.clientX < MOUSEPAN_SIZE_FAST)
-                        panX=-(MOUSEPAN_STEP_FAST);
-                     else
-                        panX=-MOUSEPAN_STEP;
-                  }
-                  else
-                  {
-                     panX = 0;
-                  }
+            if(event.clientX > (Isometric.windowWidth()-MOUSEPAN_SIZE))
+            {
+               if(event.clientX > (Isometric.windowWidth()-MOUSEPAN_SIZE_FAST))
+                  panX=MOUSEPAN_STEP_FAST;
+               else
+                  panX=MOUSEPAN_STEP;
+            }
+            else if(event.clientX < MOUSEPAN_SIZE)
+            {
+               if(event.clientX < MOUSEPAN_SIZE_FAST)
+                  panX=-(MOUSEPAN_STEP_FAST);
+               else
+                  panX=-MOUSEPAN_STEP;
+            }
+            else
+            {
+               panX = 0;
+            }
 
-                  if(event.clientY > (Isometric.windowHeight()-MOUSEPAN_SIZE))
-                  {
-                     if(event.clientY > (Isometric.windowHeight()-MOUSEPAN_SIZE_FAST))
-                        panY=MOUSEPAN_STEP_FAST;
-                     else
-                        panY=MOUSEPAN_STEP;
-                  }
-                  else if(event.clientY < MOUSEPAN_SIZE)
-                  {
-                     if(event.clientY < MOUSEPAN_SIZE_FAST)
-                        panY=-MOUSEPAN_STEP_FAST;
-                     else
-                        panY=-MOUSEPAN_STEP;
-                  }
-                  else
-                  {
-                     panY = 0;
-                  }
-               };
+            if(event.clientY > (Isometric.windowHeight()-MOUSEPAN_SIZE))
+            {
+               if(event.clientY > (Isometric.windowHeight()-MOUSEPAN_SIZE_FAST))
+                  panY=MOUSEPAN_STEP_FAST;
+               else
+                  panY=MOUSEPAN_STEP;
+            }
+            else if(event.clientY < MOUSEPAN_SIZE)
+            {
+               if(event.clientY < MOUSEPAN_SIZE_FAST)
+                  panY=-MOUSEPAN_STEP_FAST;
+               else
+                  panY=-MOUSEPAN_STEP;
+            }
+            else
+            {
+               panY = 0;
+            }
+         };
+
+
 
 
          function updatePositions() {
@@ -116,10 +119,34 @@
                Isometric.drawViewport(xAnchor, yAnchor);
    
             Enlil.tick();
-            fps.innerHTML = 'FPS: ' + Enlil.fps;
          };
 
-         require(['../lib/domReady'], function (domReady){
+         require(['../lib/domReady', '../lib/effects'], function (domReady, Effects){
+
+               var clickHandler = function clickHandler (event) {
+
+                  var target = event.target || event.srcElement;
+                  var pageX  = event.pageX;
+                  var pageY  = event.pageY;
+                  var targetColor = Effects.RGBA(255, 0, 0, 0.5);
+                  var i;
+
+                  for(i = 0; i<1;i++)
+                  {
+                     //Effects.multiplyImage('isometric', i, targetColor);
+                     //Effects.invertImage('isometric', i);
+                     //Effects.grayscaleImage('isometric', i);
+                     //Effects.embossImage('isometric', i);
+                  }
+
+                  for(i = 0; i<4; i++) {
+                     // Isometric.renderTilemapToOffScreenCanvas(i);
+                  }
+                  //Isometric.drawViewport(xAnchor, yAnchor);
+
+                  Effects.addTimedEffect(Effects.fadeOut, ['isometric', 0], (new Date).getTime(), 3, 10);
+               };
+
                domReady(function () {
                   var tiles = [0, 2, 3, 5];
                   Isometric.init('div1', Isometric.FULLSCREEN, 64, 32, mapWidth, mapHeight, 1024, 512, './assets/TileAtlas.png', './assets/TileAtlas.json', function() {
@@ -134,6 +161,7 @@
                   Enlil.startFPS();
                   Enlil.registerRunLoop(advance);
                   Enlil.addEventHandler(document.body, "mousemove", mouseMove);
+                  Enlil.addEventHandler(document.body, "click",     clickHandler);
                   Enlil.start();
                });
             });

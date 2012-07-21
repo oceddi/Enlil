@@ -1,0 +1,251 @@
+<html>
+   <head>
+      <script src="../lib/thirdparty/require.js"></script>
+   </head>
+   <body>
+   <h1>Physics Test Page</h1>
+
+   <div id='version'></div> 
+   <div id='fps'></div> 
+
+   </body>
+
+   <script type="text/javascript">
+   require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets', '../lib/effects'], function(Enlil, Actors, Input, Paths, Sheets, Effects) {
+      
+      Sheets.add('ifrit',   
+      {
+         resource:'assets/ifrit.png',
+         cwidth:80,
+         cheight:80,
+         groups:
+         {
+            'down'  : [  0,  3 ],
+            'left'  : [  4,  7 ],
+            'right' : [  8, 11 ],
+            'up'    : [ 12, 15 ]
+         }
+      });
+
+      Sheets.add('pirate',
+      {
+         resource:'assets/pirate_m2.png',
+         cwidth:32,
+         cheight:48,
+         groups:
+         {
+            'down'  : [  0,  3 ],
+            'left'  : [  4,  7 ],
+            'right' : [  8, 11 ],
+            'up'    : [ 12, 15 ]  
+         }
+      });
+
+      Actors.add(
+         {  
+            name : 'pirate_dave',
+         sheetid : 'pirate',
+            rectangle : [32, 48]
+         }
+      );
+      
+      Paths.add('pirate_walk',
+      {
+         waypoints:
+         [
+            /*  x, y */
+            [ 50, 50 ],
+            [ 100, 50 ]
+         ]
+      });
+
+      var ifritPaths = [];
+
+      for(var i=0; i<10; i++)
+      {
+         Actors.add(
+            {  
+               name : 'ifrit_'+i,
+            sheetid : 'ifrit',
+             circle : i === 2 ? 150 : 0
+            }
+         );
+         Paths.add('ifrit_walk_'+i,
+         {
+            waypoints:
+            [
+               /*  x, y */
+               [ 50, 50+(i*300) ],
+               [ 100, 50+(i*300) ]
+            ]
+         });
+
+         ifritPaths.push(
+            Paths.instantiate('ifrit_walk_'+i,
+            {
+               automatic: true,
+               repeats:   true,
+               closeLoop: false,
+               reverses:  true,
+               curve:     'linear',
+               intervals: 
+               [
+                  2,
+                  2
+               ],
+               groups:
+               [
+                  'right',
+                  'left'
+               ]
+            })
+         );
+      }
+
+      var piratePath = Paths.instantiate('pirate_walk',
+         {
+            automatic: true,
+            repeats:   false,
+            closeLoop: false,
+            reverses:  false,
+            curve:     'linear',
+            intervals: 
+            [
+               5
+            ],
+            groups:
+            [
+               'right'
+            ]
+         }
+      );
+
+      var advance = function() {
+         if(Enlil.frameCount % 2 === 0)
+         {
+            var locations   = Paths.interpolateAll();
+            var pirateDave  = Actors.getIdForName('pirate_dave');
+            var ifrit2      = Actors.getIdForName('ifrit_2');
+            var collisions;
+            var collisions2;
+
+            Actors.drawGroup(pirateDave, locations[piratePath].gid,  0, locations[piratePath].x,  locations[piratePath].y);
+
+
+            for(var i = 0; i<10; i++)
+            {
+               var ifrit = Actors.getIdForName('ifrit_'+i);
+
+               Actors.drawGroup(ifrit, locations[ifritPaths[i]].gid,  0, locations[ifritPaths[i]].x,  locations[ifritPaths[i]].y);
+            }
+
+            /* Check for collision every 10 frames. */
+            if(Enlil.frameCount % 10 === 0)
+            {
+               collisions = Actors.getCollisions(pirateDave);
+               collisions2 = Actors.getCollisionsWithinCircle(ifrit2, 150);
+
+               for(var j=0; j<collisions.length; j++)
+               {
+                  if(Actors.getEffectIDs(collisions[j]).length === 0)
+                     Actors.addTimedEffect(collisions[j],
+                         Effects.fadeOut,
+                         (new Date).getTime(),
+                         1,
+                         10);
+               }
+
+               if(collisions2.length && Actors.getEffectIDs(ifrit2).length == 0)
+               {
+                  console.log(collisions2[0]);
+
+                  Actors.addTimedEffect(ifrit2,
+                         Effects.invert,
+                         (new Date).getTime(),
+                         1, 1, 1);
+               }
+            }
+         }
+         Enlil.tick();
+            
+         fps.innerHTML = 'FPS: ' + Enlil.fps;
+      }
+
+      var clickHandler = function (event) {
+         var target = event.target || event.srcElement;
+         var pageX = event.pageX;
+         var pageY = event.pageY;
+         var pirLoc;
+         var dir;
+
+         if(pageX == undefined) {
+            pageX = event.clientX + document.body.scrollLeft;
+            pageY = event.clientY + document.body.scrollTop;
+         }
+         
+         pirLoc = Paths.interpolate(piratePath, (new Date).getTime());
+
+         Paths.stop(piratePath);
+
+         if( (pageX - pirLoc['x']) > 40)
+         {
+            dir = 'right';
+         }
+         else if (( pageX - pirLoc['x']) > -40)
+         {
+            if((pageY - pirLoc['y']) > 0)
+            {
+               dir = 'down';
+            }
+            else
+            {
+               dir = 'up';
+            }
+         }
+         else
+         {
+            dir = 'left';
+         }
+
+         /* Create a new Path (or replace previous path) with waypoints         */
+         /* from the pirate's current location to the click location (walking). */
+         Paths.add('pirate_walk',
+         {
+            waypoints:
+            [
+               /*  x, y */
+               [ pirLoc['x'], pirLoc['y'] ],
+               [ pageX, pageY ]
+            ]
+         });
+
+         piratePath = Paths.instantiate('pirate_walk',
+         {
+            automatic: true,
+            repeats:   false,
+            closeLoop: false,
+            reverses:  false,
+            curve:     'linear',
+            intervals: 
+            [
+               1
+            ],
+            groups:
+            [
+               dir
+            ]
+         });
+      }
+
+      require(['../lib/domReady'], function (domReady) {
+         domReady(function () {
+            Enlil.startFPS();
+            Enlil.registerRunLoop(advance);
+            Enlil.addEventHandler(document, "click",   clickHandler)
+            Enlil.start();
+         });
+      });
+   });
+
+   </script>
+</html>

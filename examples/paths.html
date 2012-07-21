@@ -7,16 +7,12 @@
 
    <div id='version'></div> 
    <div id='fps'></div> 
-   <div id='div1'></div>
-   <div id='div2'></div>
-   <div id='div3'></div>
-   <div id='div4'></div>
 
    </body>
 
    <script type="text/javascript">
 
-      require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets'], function(Enlil, Actors, Input, Paths, Sheets) {
+      require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets', '../lib/effects'], function(Enlil, Actors, Input, Paths, Sheets, Effects) {
 
          var ver   = document.getElementById('version');
          var fps   = document.getElementById('fps');
@@ -24,7 +20,7 @@
          var advance = function() {
 
             /* Don't interpolate animations every frame, that's too fast.  Do it every 2 frames. */
-            if(Enlil.frameCount % 2 == 0)
+            if(Enlil.frameCount % 2 === 0)
             {
                var locations    = Paths.interpolateAll();
                var monIfritId   = Actors.getIdForName('monIfrit');
@@ -40,7 +36,7 @@
                if(!Paths.hasStopped(piratePath))
                   Actors.drawGroup(pirateId,     locations[piratePath].gid,  Enlil.animCount % 4, locations[piratePath].x,  locations[piratePath].y);
                else
-                  Actors.drawGroup(pirateId,     locations[piratePath].gid,  0,             locations[piratePath].x,  locations[piratePath].y);
+                  Actors.drawGroup(pirateId,     locations[piratePath].gid,  0, locations[piratePath].x,  locations[piratePath].y);
 
                if(locations[circleBatId].gid)
                   Actors.drawGroup(circleBatId,  locations[pathCircle].gid,  Enlil.animCount % 4, locations[pathPacing].x+locations[pathCircle].x,  locations[pathPacing].y+locations[pathCircle].y);
@@ -349,7 +345,7 @@
             }
          };
 
-         var clickHandler = function userClicked (event) {
+         var clickHandler = function (event) {
             var target = event.target || event.srcElement;
             var pageX = event.pageX;
             var pageY = event.pageY;
@@ -415,6 +411,11 @@
                   dir
                ]
             });
+            //Effects.addTimedEffect(Effects.fadeOut, ['pirate', 0], (new Date).getTime(), 3, 10);
+            Actors.addTimedEffect(Actors.getIdForName('pirate'),
+                                  Effects.invert,
+                                  (new Date).getTime(),
+                                  5);
          };
 
          require(['../lib/domReady'], function (domReady) {

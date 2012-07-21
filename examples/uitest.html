@@ -7,9 +7,7 @@
 
       <div id='version'></div> 
       <div id='fps'></div>
-      <div id='element1'></div>
-      <div id='element2'></div>
-      <div id='element3'></div>
+
       click anywhere on the browser to place a speech bubble.
    </body>
    
@@ -58,9 +56,9 @@
 	                Enlil.startFPS();
 	                Enlil.registerRunLoop(advance);
 	                Enlil.addEventHandler(document, "click",   clickHandler);
-	                UI.showWindow(bubble1, 'element1');
-				    UI.showWindow(bubble2, 'element2');
-					UI.showWindow(bubble3, 'element3');
+	                UI.showWindow(bubble1);
+				    UI.showWindow(bubble2);
+					UI.showWindow(bubble3);
 	                Enlil.start();
 	            });
 	         });

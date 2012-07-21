@@ -11,16 +11,47 @@
 
    </body>
    <script type="text/javascript">
-	    require(["../lib/enlil"], function(Enlil) {
+	    require(["../lib/enlil", "../lib/actor", "../lib/effects"], function(Enlil, Actors, Effects) {
 		    var advance = function() {
 		       Enlil.drawFrame();
 		       Enlil.tick();
 		       fps.innerHTML = 'FPS: ' + Enlil.fps;
 		    };
 
+	        var clickHandler = function (event) {
+	            var target = event.target || event.srcElement;
+	            var pageX = event.pageX;
+	            var pageY = event.pageY;
+	            var pirLoc;
+	            var dir;
+
+	            if(pageX == undefined) {
+	               pageX = event.clientX + document.body.scrollLeft;
+	               pageY = event.clientY + document.body.scrollTop;
+	            }
+	            
+	            console.log("CLICK!!! X:" + pageX + " Y: " + pageY);
+
+	            var collisions = Actors.getCollisionsWithinRect(pageX, pageY, 50, 50);
+
+	            for(var i=0; i<collisions.length; i++)
+	            {
+	            	/* Skip collisions with backdrop */
+	            	if(collisions[i] !== 0)
+	            	{
+	            		console.log("Collision with " + collisions[i]);
+		            	Actors.addTimedEffect(collisions[i],
+		            						  Effects.invert,
+        	                          		  (new Date).getTime(),
+            	                      		  5, 1, 2);
+		            }
+	            }
+	        }
+
 		    var run = function () {
 		       Enlil.startFPS();
 		       Enlil.registerRunLoop(advance);
+		       Enlil.addEventHandler(document, "click",   clickHandler)
 		       Enlil.start();
 		    };
 
