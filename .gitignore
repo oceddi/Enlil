@@ -3,3 +3,5 @@ lib/thirdparty/dsp-js/*
 !lib/thirdparty/dsp-js/dsp.js
 !lib/thirdparty/dsp-js/README
 !lib/thirdparty/dsp-js/LICENSE
+flow.js
+waterfall.js
