@@ -1,0 +1,146 @@
+<html>
+   <head>
+      <script src="../lib/thirdparty/require.js"></script>
+   </head>
+   <body bgcolor="#000000">
+   <h1>Particle Test Page</h1>
+
+   <div id='version'></div> 
+   <div id='fps'></div> 
+
+   </body>
+
+   <script type="text/javascript">
+   require(['../lib/enlil','../lib/input', '../lib/particles'], function(Enlil, Input, Particles) {
+
+      var waterfall_emitter = {
+                width : 250,
+               height : 280,
+                 rate : 12,
+        accelleration : [0, 0, .15, .15],
+                 hue  : [200, 220],
+           saturation : [30, 60],
+            lightness : [30, 60],
+                alpha : [.05, .05],
+                shape : 2,
+                 size : [1, 20, 1, 45],
+               dieoff : [50, 60],
+         finishEffect : function renderBubble (canvas, particle) {
+                  var ctx = canvas.getContext('2d');
+      
+                  ctx.fillStyle = 'hsla('+particle.hue+', 40%, 40%, 1)';
+                  ctx.fillStyle = 'hsla('+particle.hue+', '+particle.saturation+'%, '+particle.lightness+'%, .3)';
+                  ctx.beginPath();
+                  ctx.arc(particle.x+particle.width/2,
+                        canvas.height-20-Particles.rand(0,10),
+                        Particles.rand(1,8),
+                        0,
+                        Math.PI*2,
+                        false);
+                  ctx.fill();
+               }
+      };
+
+      var wf = Particles.init(waterfall_emitter);
+
+      var fire_emitter = {
+           width : 250,
+          height : 80,
+            rate : 15,
+   accelleration : [0, 0, -.1, -.1],
+            hue  : [0, 40],
+      saturation : [60, 100],
+       lightness : [30, 60],
+           alpha : [.03, .2],
+           shape : 3,
+            size : [2, 20, 20, 30],
+          dieoff : [15, 35]
+      };
+
+
+      var fi = Particles.init(fire_emitter);
+
+      var fireworks_emitter = {
+           width : 250,
+          height : 80,
+            rate : 1,
+   accelleration : [-.1, .1, -.1, .1],
+            hue  : [0, 360],
+      saturation : [100, 100],
+       lightness : [50, 50],
+           alpha : [1.0, 1.0],
+           shape : 4,
+            size : [2, 4, 2, 4],
+          dieoff : [50, 60],
+          finishEffect : function renderStarburst (canvas, particle) {      
+                  var rays = 40;
+                  var ctx = canvas.getContext("2d");
+
+                  var centre = [particle.x, particle.y];
+                  var radius = Math.sqrt(Math.pow(particle.width*4,2)+Math.pow(particle.height*4,2));
+
+                  var segment = 2*Math.PI/rays;
+
+                  if(particle.y >= canvas.height-1)
+                     return;
+
+                  for(var i=0;i<rays;i++){
+                      ctx.beginPath();
+                      ctx.moveTo(centre[0], centre[1]);
+                      ctx.arc(
+                          centre[0], 
+                          centre[1],
+                          radius,
+                          segment * i,
+                          segment * (i+1),
+                          false
+                      );
+                      ctx.lineTo(centre[0], centre[1]);
+                      ctx.closePath();
+                      if(i % 2 === 0)
+                        ctx.fillStyle = 'hsla(' + particle.hue + ', ' +
+                                                  particle.saturation + '%, ' +
+                                                  particle.lightness + '%, ' +
+                                                  particle.alpha + ')';
+                      else
+                        ctx.fillStyle = "black";
+                      ctx.fill();
+                  }
+               }  
+      };
+
+      var fw = Particles.init(fireworks_emitter);
+
+      var advance = function() {
+
+         Enlil.tick();
+            
+         fps.innerHTML = 'FPS: ' + Enlil.fps;
+
+      }
+
+      var clickHandler = function (event) {
+         var target = event.target || event.srcElement;
+         var pageX = event.pageX;
+         var pageY = event.pageY;
+         var pirLoc;
+         var dir;
+
+         if(pageX == undefined) {
+            pageX = event.clientX + document.body.scrollLeft;
+            pageY = event.clientY + document.body.scrollTop;
+         }
+      }
+
+      require(['../lib/domReady'], function (domReady) {
+         domReady(function () {
+            Enlil.startFPS();
+            Enlil.registerRunLoop(advance);
+            Enlil.addEventHandler(document, "click",   clickHandler)
+            Enlil.start();
+         });
+      });
+   });
+
+   </script>
+</html>

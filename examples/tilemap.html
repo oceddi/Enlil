@@ -1,0 +1,136 @@
+<html>
+   <head>
+      <script src="../lib/thirdparty/require.js"></script>
+   </head>
+   <body>
+   <h1>TileMap Test Page</h1>
+
+   <div id='version'></div> 
+   <div id='div1'></div>
+
+   </body>
+
+   <script type="text/javascript">
+      var xAnchor = 8;
+      var yAnchor = 8;
+      var MOUSEPAN_SIZE = 150;
+      var MOUSEPAN_SIZE_FAST = 50;
+      var MOUSEPAN_STEP = 1;
+      var MOUSEPAN_STEP_FAST = 5;
+      var PAN_DELAY  = 1;
+
+      var mapWidth   = 42*16;
+      var mapHeight  = 34*16;
+      var panX       = 0;
+      var panY       = 0;
+      var panDelay   = PAN_DELAY;
+
+      require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets','../lib/tilemap'], function(Enlil, Actors, Input, Paths, Sheets, Tilemap) {
+      
+         function mouseMove(event) {
+            if(event.clientX > (Tilemap.windowWidth()-MOUSEPAN_SIZE))
+            {
+               if(event.clientX > (Tilemap.windowWidth()-MOUSEPAN_SIZE_FAST))
+                  panX=MOUSEPAN_STEP_FAST;
+               else
+                  panX=MOUSEPAN_STEP;
+            }
+            else if(event.clientX < MOUSEPAN_SIZE)
+            {
+               if(event.clientX < MOUSEPAN_SIZE_FAST)
+                  panX=-(MOUSEPAN_STEP_FAST);
+               else
+                  panX=-MOUSEPAN_STEP;
+            }
+            else
+            {
+               panX = 0;
+            }
+
+            if(event.clientY > (Tilemap.windowHeight()-MOUSEPAN_SIZE))
+            {
+               if(event.clientY > (Tilemap.windowHeight()-MOUSEPAN_SIZE_FAST))
+                  panY=MOUSEPAN_STEP_FAST;
+               else
+                  panY=MOUSEPAN_STEP;
+            }
+            else if(event.clientY < MOUSEPAN_SIZE)
+            {
+               if(event.clientY < MOUSEPAN_SIZE_FAST)
+                  panY=-MOUSEPAN_STEP_FAST;
+               else
+                  panY=-MOUSEPAN_STEP;
+            }
+            else
+            {
+               panY = 0;
+            }
+         };
+
+         function updatePositions() {
+            var redraw = false;
+
+            if(panDelay > 0)
+               panDelay--;
+            else
+            {
+               if(panX & ((xAnchor + panX) >= 8) & ((xAnchor + panX) <= (mapWidth-Tilemap.windowWidth()-8)))
+               {
+                  xAnchor += panX;
+                  redraw = true;
+               }
+
+               if(panY & ((yAnchor + panY) >= 8) & ((yAnchor + panY) <= (mapHeight-Tilemap.windowHeight())))
+               {
+                  yAnchor += panY;
+                  redraw = true;
+               }
+               panDelay = PAN_DELAY;
+            }
+
+            return redraw;
+         };
+
+         var advance = function() {
+            var redraw = false;
+
+            redraw = updatePositions();
+
+            if(redraw)            
+            {
+               Tilemap.drawViewport(xAnchor, yAnchor);
+            }
+            Enlil.tick();
+         };
+
+         require(['../lib/domReady', '../lib/effects'], function (domReady, Effects){
+
+               domReady(function () {
+
+                  var params = {
+                     pid : 'div1',
+                     mode : Tilemap.FULLSCREEN,
+                     tilewidth : 16,
+                     tileheight : 16,
+                     mapwidth : mapWidth,
+                     mapheight : mapHeight,
+                     screenwidth : 1024,
+                     screenheight : 512,
+                     pathToTiles : './assets/spelunky-tiles.png',
+                     callback : function() {
+                        Tilemap.setMapData(0, './assets/spelunky0.png');
+                        Tilemap.drawViewport(xAnchor, yAnchor);
+                     }
+                  };
+
+                  Tilemap.init(params);
+
+                  Enlil.startFPS();
+                  Enlil.registerRunLoop(advance);
+                  Enlil.addEventHandler(document.body, "mousemove", mouseMove);
+                  Enlil.start();
+               });
+            });
+         });
+   </script>
+</html>
