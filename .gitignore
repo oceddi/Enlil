@@ -5,3 +5,5 @@ lib/thirdparty/dsp-js/*
 !lib/thirdparty/dsp-js/LICENSE
 flow.js
 waterfall.js
+examples/assets/zelda-tiles.png
+examples/assets/zelda-all.png
