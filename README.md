@@ -1,6 +1,8 @@
-Welcome to Enlil, a javascript HTML5 game library.  The intent of Enlil is to package up and provide resources to HTML5 game developers making 2D sprite based games.
+#Enil
+## Javascript HTML5 game library.  
+The intent of Enlil is to package up and provide resources to HTML5 game developers making 2D sprite based games.
 
-Enlil Current Feature Set:
+## Enlil Current Feature Set:
 
 - Uses require.js packaging scheme to organize source code.
 - Parses sprite sheets into groupings of animations (i.e. walk, run, fly, jump, etc).
@@ -11,7 +13,7 @@ Enlil Current Feature Set:
 - Speech bubbles that can scale in size.
 
 
-Example use of this library can be cound under the the "/examples" folder:
+## Example use of this library can be cound under the the "/examples" folder:
 
 - paths.html - Demonstrates loading sprite sheets, animating, sprite movement and the mouse input support.  Clicking on the screen will cause the pirate sprite to move towards the click.
 
@@ -23,14 +25,14 @@ Example use of this library can be cound under the the "/examples" folder:
 - uitest.html - Demonstrates speech bubble ui elements.  Click on screen to see some random speech bubbles getting placed where you clicked (random text and size).
 
 
-Special Thanks:
+## Special Thanks:
 
 Sprite sheets in the example directory courtesy of Sithjester at http://untamed.wild-refuge.net/rpgxp.php
 
-Questions/Feedback:
+## Questions/Feedback:
 
 oceddi@gmail.com
 
-Twitter:
+## Twitter:
 
 twitter.com/oceddi
