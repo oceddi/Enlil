@@ -11,7 +11,7 @@
    </body>
 
    <script type="text/javascript">
-   require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets', '../lib/effects'], function(Enlil, Actors, Input, Paths, Sheets, Effects) {
+   require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets', '../lib/effects', '../lib/physics'], function(Enlil, Actors, Input, Paths, Sheets, Effects, Physics) {
       
       Sheets.add('ifrit',   
       {
@@ -124,13 +124,21 @@
          if(Enlil.frameCount % 2 === 0)
          {
             var locations   = Paths.interpolateAll();
+            var plocs       = Physics.interpolateAll();
             var pirateDave  = Actors.getIdForName('pirate_dave');
             var ifrit2      = Actors.getIdForName('ifrit_2');
             var collisions;
             var collisions2;
 
-            Actors.drawGroup(pirateDave, locations[piratePath].gid,  0, locations[piratePath].x,  locations[piratePath].y);
 
+            if(plocs.length)
+            {
+               Actors.drawGroup(pirateDave, "right",  0, plocs[0].x,  plocs[0].y);
+            }
+            else
+            {
+               Actors.drawGroup(pirateDave, locations[piratePath].gid,  0, locations[piratePath].x,  locations[piratePath].y);
+            }
 
             for(var i = 0; i<10; i++)
             {
@@ -237,11 +245,38 @@
          });
       }
 
+      var matchFunc = function (event) {
+         var keyCodes = {
+            32: "space"
+         };
+
+         if(keyCodes[event.keyCode])
+            return true;
+         else
+            return false;
+      }
+
+      var keyboardHandler = function keyDown (event) {
+         var pirLoc = Paths.interpolate(piratePath, (new Date).getTime());
+
+         console.log("SPACE!!!" );
+
+         Physics.instantiate( {
+            x : pirLoc['x'],
+            y : pirLoc['y'],
+            vx :  150.0,
+            vy : -400.0,
+             w :  32,
+             h :  48 
+          });
+      };
+
       require(['../lib/domReady'], function (domReady) {
          domReady(function () {
             Enlil.startFPS();
             Enlil.registerRunLoop(advance);
-            Enlil.addEventHandler(document, "click",   clickHandler)
+            Enlil.addEventHandler(document, "click",   clickHandler);
+            Enlil.addEventHandler(document, "keydown", keyboardHandler, matchFunc);
             Enlil.start();
          });
       });

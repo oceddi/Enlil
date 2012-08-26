@@ -11,8 +11,8 @@
    </body>
 
    <script type="text/javascript">
-      var xAnchor = 8;
-      var yAnchor = 8;
+      var xAnchor = 0;
+      var yAnchor = 0;
       var MOUSEPAN_SIZE = 150;
       var MOUSEPAN_SIZE_FAST = 50;
       var MOUSEPAN_STEP = 1;
@@ -25,8 +25,32 @@
       var panY       = 0;
       var panDelay   = PAN_DELAY;
 
-      require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets','../lib/tilemap'], function(Enlil, Actors, Input, Paths, Sheets, Tilemap) {
-      
+      require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets','../lib/tilemap', '../lib/physics'], function(Enlil, Actors, Input, Paths, Sheets, Tilemap, Physics) {
+         var lastDirection = "right";
+         var stepCount = 0;
+
+         Sheets.add('pirate',
+         {
+            resource:'assets/pirate_m2.png',
+            cwidth:32,
+            cheight:48,
+            groups:
+            {
+               'down'  : [  0,  3 ],
+               'left'  : [  4,  7 ],
+               'right' : [  8, 11 ],
+               'up'    : [ 12, 15 ]  
+            }
+         });
+
+         Actors.add(
+            {  
+               name : 'pirate_dave',
+            sheetid : 'pirate'
+//               ,rectangle : [32, 48]
+            }
+         );
+
          function mouseMove(event) {
             if(event.clientX > (Tilemap.windowWidth()-MOUSEPAN_SIZE))
             {
@@ -92,15 +116,77 @@
          };
 
          var advance = function() {
-            var redraw = false;
+            var redraw      = false;
+            var pirateDave  = Actors.getIdForName('pirate_dave');
+
+            if(Enlil.frameCount % 5 === 0)
+            {
+               var state = Actors.stepPhysics(xAnchor, yAnchor);
+
+               if(state[0] && state[0].vx === 0)
+                  stepCount = 0;
+
+               if(stepCount)
+                  stepCount --;
+            }
 
             redraw = updatePositions();
 
-            if(redraw)            
+            if(1)      
             {
                Tilemap.drawViewport(xAnchor, yAnchor);
             }
+
+
+            Actors.drawGroup(pirateDave, lastDirection,  stepCount % 4);
+
             Enlil.tick();
+         };
+
+         var matchFunc = function (event) {
+            var keyCodes = {
+               37: "left",   // left
+               39: "right",  // right
+               32: "space"   // space bar
+            };
+
+            if(keyCodes[event.keyCode])
+               return true;
+            else
+               return false;
+         }
+
+         var keyboardHandler = function keyDown (event) {
+            var pirateDave  = Actors.getIdForName('pirate_dave');
+            var loc         = Actors.getPosition(pirateDave)
+
+            //console.log(loc);
+
+            switch(event.keyCode)
+            {
+               case 37:
+                  console.log("left!!!" );
+
+                  Actors.changePhysicsAttr(pirateDave, -50.0, -5.0, 0, 0);
+                  lastDirection = "left";
+                  stepCount += 4;
+                  break;
+
+               case 39:
+                  console.log("right!!!" );
+
+                  Actors.changePhysicsAttr(pirateDave, 50.0, -5.0, 0, 0);
+                  lastDirection = "right";
+                  stepCount += 4;
+                  break;
+
+               case 32:
+                  console.log("jump!!!" );
+
+                  Actors.changePhysicsAttr(pirateDave, 0.0, -100.0, 0, 0);
+                  break;
+            }
+
          };
 
          require(['../lib/domReady', '../lib/effects'], function (domReady, Effects){
@@ -116,10 +202,23 @@
                      mapheight : mapHeight,
                      screenwidth : 1024,
                      screenheight : 512,
+                     scalefactor: 2,
                      pathToTiles : './assets/spelunky-tiles.png',
                      callback : function() {
+                        var pirateDave  = Actors.getIdForName('pirate_dave');
+
                         Tilemap.setMapData(0, './assets/spelunky0.png');
                         Tilemap.drawViewport(xAnchor, yAnchor);
+
+                        var data = {
+                                x : 128, // starting position
+                                y : 47,  
+                               vx : 0.0, // starting velocity
+                               vy : 0.0,
+                         collider : Tilemap.physicsColliderCheck
+                        };
+
+                        Actors.attachPhysicsModel(pirateDave, data);
                      }
                   };
 
@@ -127,7 +226,8 @@
 
                   Enlil.startFPS();
                   Enlil.registerRunLoop(advance);
-                  Enlil.addEventHandler(document.body, "mousemove", mouseMove);
+                  //Enlil.addEventHandler(document.body, "mousemove", mouseMove);
+                  Enlil.addEventHandler(document, "keydown", keyboardHandler, matchFunc);
                   Enlil.start();
                });
             });
