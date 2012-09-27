@@ -39,4 +39,4 @@ twitter.com/oceddi
 
 ## GITTIP:
 
-<https://www.gittip.com/oceddi/widget.html>
+<https://www.gittip.com/oceddi/>
