@@ -39,5 +39,4 @@ twitter.com/oceddi
 
 ## GITTIP:
 
-<iframe style="border: 0; margin: 0; padding: 0;" src="https://www.gittip.com/oceddi/widget.html" width="48pt" height="20pt">
-</iframe>
+<https://www.gittip.com/oceddi/widget.html>
