@@ -13,7 +13,7 @@
    <script type="text/javascript">
    require(['../lib/enlil','../lib/actor','../lib/input','../lib/path','../lib/sheets', '../lib/effects', '../lib/physics'], function(Enlil, Actors, Input, Paths, Sheets, Effects, Physics) {
       
-      Sheets.add('ifrit',   
+      var ifrit = new Sheets(
       {
          resource:'assets/ifrit.png',
          cwidth:80,
@@ -27,7 +27,7 @@
          }
       });
 
-      Sheets.add('pirate',
+      var pirate = new Sheets(
       {
          resource:'assets/pirate_m2.png',
          cwidth:32,
@@ -41,10 +41,10 @@
          }
       });
 
-      Actors.add(
+      var pirateDave = new Actors(
          {  
             name : 'pirate_dave',
-         sheetid : 'pirate',
+            sheet : pirate,
             rectangle : [32, 48]
          }
       );
@@ -60,16 +60,16 @@
       });
 
       var ifritPaths = [];
-
+      var ifrits = [];
       for(var i=0; i<10; i++)
       {
-         Actors.add(
+         ifrits.push(new Actors(
             {  
                name : 'ifrit_'+i,
-            sheetid : 'ifrit',
+              sheet : ifrit,
              circle : i === 2 ? 150 : 0
             }
-         );
+         ));
          Paths.add('ifrit_walk_'+i,
          {
             waypoints:
@@ -125,49 +125,45 @@
          {
             var locations   = Paths.interpolateAll();
             var plocs       = Physics.interpolateAll();
-            var pirateDave  = Actors.getIdForName('pirate_dave');
-            var ifrit2      = Actors.getIdForName('ifrit_2');
             var collisions;
             var collisions2;
 
 
             if(plocs.length)
             {
-               Actors.drawGroup(pirateDave, "right",  0, plocs[0].x,  plocs[0].y);
+               pirateDave.drawGroup("right",  0, plocs[0].x,  plocs[0].y);
             }
             else
             {
-               Actors.drawGroup(pirateDave, locations[piratePath].gid,  0, locations[piratePath].x,  locations[piratePath].y);
+               pirateDave.drawGroup(locations[piratePath].gid,  0, locations[piratePath].x,  locations[piratePath].y);
             }
 
             for(var i = 0; i<10; i++)
             {
-               var ifrit = Actors.getIdForName('ifrit_'+i);
-
-               Actors.drawGroup(ifrit, locations[ifritPaths[i]].gid,  0, locations[ifritPaths[i]].x,  locations[ifritPaths[i]].y);
+               ifrits[i].drawGroup(locations[ifritPaths[i]].gid,  0, locations[ifritPaths[i]].x,  locations[ifritPaths[i]].y);
             }
 
             /* Check for collision every 10 frames. */
             if(Enlil.frameCount % 10 === 0)
             {
-               collisions = Actors.getCollisions(pirateDave);
-               collisions2 = Actors.getCollisionsWithinCircle(ifrit2, 150);
+               collisions = pirateDave.getCollisions();
+               collisions2 = ifrits[2].getCollisionsWithinCircle(150);
 
                for(var j=0; j<collisions.length; j++)
                {
-                  if(Actors.getEffectIDs(collisions[j]).length === 0)
-                     Actors.addTimedEffect(collisions[j],
+                  if(collisions[j].getEffectIDs().length === 0)
+                     collisions[j].addTimedEffect(
                          Effects.fadeOut,
                          (new Date).getTime(),
                          1,
                          10);
                }
 
-               if(collisions2.length && Actors.getEffectIDs(ifrit2).length == 0)
+               if(collisions2.length && ifrits[2].getEffectIDs().length == 0)
                {
                   console.log(collisions2[0]);
 
-                  Actors.addTimedEffect(ifrit2,
+                  ifrits[2].addTimedEffect(
                          Effects.invert,
                          (new Date).getTime(),
                          1, 1, 1);
@@ -261,11 +257,11 @@
 
          console.log("SPACE!!!" );
 
-         Physics.instantiate( {
-            x : pirLoc['x'],
-            y : pirLoc['y'],
-            vx :  150.0,
-            vy : -400.0,
+         var jump = new Physics( {
+             x : pirLoc['x'],
+             y : pirLoc['y'],
+            vx :  20.0,
+            vy : -100.0,
              w :  32,
              h :  48 
           });

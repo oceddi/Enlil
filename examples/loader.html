@@ -39,11 +39,10 @@
 	            	/* Skip collisions with backdrop */
 	            	if(collisions[i] !== 0)
 	            	{
-	            		console.log("Collision with " + collisions[i]);
-		            	Actors.addTimedEffect(collisions[i],
-		            						  Effects.invert,
-        	                          		  (new Date).getTime(),
-            	                      		  5, 1, 2);
+	            		console.log("Collision with " + collisions[i].name);
+		            	collisions[i].addTimedEffect(Effects.invert,
+        	                          		       (new Date).getTime(),
+            	                      		       5, 1, 2);
 		            }
 	            }
 	        }

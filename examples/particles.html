@@ -41,7 +41,7 @@
                }
       };
 
-      var wf = Particles.init(waterfall_emitter);
+      var wf = new Particles(waterfall_emitter);
 
       var fire_emitter = {
            width : 250,
@@ -58,7 +58,7 @@
       };
 
 
-      var fi = Particles.init(fire_emitter);
+      var fi = new Particles(fire_emitter);
 
       var fireworks_emitter = {
            width : 250,
@@ -109,7 +109,7 @@
                }  
       };
 
-      var fw = Particles.init(fireworks_emitter);
+      var fw = new Particles(fireworks_emitter);
 
       var advance = function() {
 

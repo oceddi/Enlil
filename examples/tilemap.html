@@ -29,7 +29,7 @@
          var lastDirection = "right";
          var stepCount = 0;
 
-         Sheets.add('pirate',
+         var pirate = new Sheets(
          {
             resource:'assets/pirate_m2.png',
             cwidth:32,
@@ -43,10 +43,10 @@
             }
          });
 
-         Actors.add(
+         var pirateDave = new Actors(
             {  
                name : 'pirate_dave',
-            sheetid : 'pirate'
+              sheet : pirate
 //               ,rectangle : [32, 48]
             }
          );
@@ -117,7 +117,6 @@
 
          var advance = function() {
             var redraw      = false;
-            var pirateDave  = Actors.getIdForName('pirate_dave');
 
             if(Enlil.frameCount % 5 === 0)
             {
@@ -138,7 +137,7 @@
             }
 
 
-            Actors.drawGroup(pirateDave, lastDirection,  stepCount % 4);
+            pirateDave.drawGroup(lastDirection,  stepCount % 4);
 
             Enlil.tick();
          };
@@ -157,8 +156,7 @@
          }
 
          var keyboardHandler = function keyDown (event) {
-            var pirateDave  = Actors.getIdForName('pirate_dave');
-            var loc         = Actors.getPosition(pirateDave)
+            var loc  = pirateDave.getPosition()
 
             //console.log(loc);
 
@@ -167,7 +165,7 @@
                case 37:
                   console.log("left!!!" );
 
-                  Actors.changePhysicsAttr(pirateDave, -50.0, -5.0, 0, 0);
+                  pirateDave.changePhysicsAttr(-50.0, -5.0, 0, 0);
                   lastDirection = "left";
                   stepCount += 4;
                   break;
@@ -175,7 +173,7 @@
                case 39:
                   console.log("right!!!" );
 
-                  Actors.changePhysicsAttr(pirateDave, 50.0, -5.0, 0, 0);
+                  pirateDave.changePhysicsAttr(50.0, -5.0, 0, 0);
                   lastDirection = "right";
                   stepCount += 4;
                   break;
@@ -183,7 +181,7 @@
                case 32:
                   console.log("jump!!!" );
 
-                  Actors.changePhysicsAttr(pirateDave, 0.0, -100.0, 0, 0);
+                  pirateDave.changePhysicsAttr(0.0, -100.0, 0, 0);
                   break;
             }
 
@@ -205,7 +203,6 @@
                      scalefactor: 2,
                      pathToTiles : './assets/spelunky-tiles.png',
                      callback : function() {
-                        var pirateDave  = Actors.getIdForName('pirate_dave');
 
                         Tilemap.setMapData(0, './assets/spelunky0.png');
                         Tilemap.drawViewport(xAnchor, yAnchor);
@@ -218,7 +215,7 @@
                          collider : Tilemap.physicsColliderCheck
                         };
 
-                        Actors.attachPhysicsModel(pirateDave, data);
+                        pirateDave.attachPhysicsModel(data);
                      }
                   };
 

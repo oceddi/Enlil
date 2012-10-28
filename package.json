@@ -2,7 +2,7 @@
   "author": "Dean McKee <oceddi@gmail.com>",
   "name": "Enlil",
   "description": "HTML5 Gaming platform client libraries.",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "repository": {
     "type": "git",
     "url": "git://github.com/oceddi/Enlil.git"
