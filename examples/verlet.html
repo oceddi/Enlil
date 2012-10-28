@@ -1,0 +1,789 @@
+<html>
+  <head>
+    <script src="../lib/thirdparty/require.js"></script>
+  </head>
+  <body bgcolor="#000000">
+  <h1>Verlet Test Page</h1>
+
+  <div id='version'></div> 
+  <div id='fps'></div> 
+
+  </body>
+  <script type="text/javascript">
+    require(['../lib/enlil','../lib/input', '../lib/verlet'], function(Enlil, Input, Verlet)
+      {
+
+        var flag_init =
+        [
+          {
+             pos : [200, 60],
+          oldpos : [200, 60],
+               a : [0, 0]
+          },
+          {
+             pos : [230, 60],
+          oldpos : [230, 60],
+               a : [0, 0]
+          },
+          {
+             pos : [260, 60],
+          oldpos : [260, 60],
+               a : [0, 0]
+          },
+          {
+             pos : [290, 60],
+          oldpos : [290, 60],
+               a : [0, 0]
+          },
+          {
+             pos : [200, 90],
+          oldpos : [200, 90],
+               a : [0, 0]
+          },
+          {
+             pos : [230, 90],
+          oldpos : [230, 90],
+               a : [0, 0]
+          },
+          {
+             pos : [260, 90],
+          oldpos : [260, 90],
+               a : [0, 0]
+          },
+          {
+             pos : [290, 90],
+          oldpos : [290, 90],
+               a : [0, 0]
+          },
+          {
+             pos : [200, 120],
+          oldpos : [200, 120],
+               a : [0, 0]
+          },
+          {
+             pos : [230, 120],
+          oldpos : [230, 120],
+               a : [0, 0]
+          },
+          {
+             pos : [260, 120],
+          oldpos : [260, 120],
+               a : [0, 0]
+          },
+          {
+             pos : [290, 120],
+          oldpos : [290, 120],
+               a : [0, 0]
+          }
+        ];
+
+        var flag_constraints = 
+        [
+          {
+            a : 0,
+            b : 4,
+            r : 0.1
+          },
+          {
+            a : 4,
+            b : 5,
+            r : 0.2
+          },
+          {
+            a : 5,
+            b : 0,
+            r : 0.005
+          },
+
+          {
+            a : 0,
+            b : 5,
+            r : 0.005
+          },
+          {
+            a : 5,
+            b : 1,
+            r : 0.005
+          },
+          {
+            a : 1,
+            b : 0,
+            r : 0.2
+          },
+
+          {
+            a : 1,
+            b : 5,
+            r : 0.2
+          },
+          {
+            a : 5,
+            b : 6,
+            r : 0.2
+          },
+          {
+            a : 6,
+            b : 1,
+            r : 0.005
+          },
+
+          {
+            a : 1,
+            b : 6,
+            r : 0.005
+          },
+          {
+            a : 6,
+            b : 2,
+            r : 0.005
+          },
+          {
+            a : 2,
+            b : 1,
+            r : 0.2
+          },
+
+          {
+            a : 2,
+            b : 6,
+            r : 0.2
+          },
+          {
+            a : 6,
+            b : 7,
+            r : 0.2
+          },
+          {
+            a : 7,
+            b : 2,
+            r : 0.005
+          },
+
+          {
+            a : 2,
+            b : 7,
+            r : 0.005
+          },
+          {
+            a : 7,
+            b : 3,
+            r : 0.005
+          },
+          {
+            a : 3,
+            b : 2,
+            r : 0.2
+          },
+
+
+          {
+            a : 4,
+            b : 8,
+            r : 0.1
+          },
+          {
+            a : 8,
+            b : 9,
+            r : 0.2
+          },
+          {
+            a : 9,
+            b : 4,
+            r : 0.005
+          },
+
+          {
+            a : 4,
+            b : 9,
+            r : 0.005
+          },
+          {
+            a : 9,
+            b : 5,
+            r : 0.005
+          },
+          {
+            a : 5,
+            b : 4,
+            r : 0.2
+          },
+
+          {
+            a : 5,
+            b : 9,
+            r : 0.2
+          },
+          {
+            a : 9,
+            b : 10,
+            r : 0.2
+          },
+          {
+            a : 10,
+            b : 5,
+            r : 0.005
+          },
+
+          {
+            a : 5,
+            b : 10,
+            r : 0.005
+          },
+          {
+            a : 10,
+            b : 6,
+            r : 0.005
+          },
+          {
+            a : 6,
+            b : 5,
+            r : 0.2
+          },
+
+          {
+            a : 6,
+            b : 10,
+            r : 0.2
+          },
+          {
+            a : 10,
+            b : 11,
+            r : 0.2
+          },
+          {
+            a : 11,
+            b : 6,
+            r : 0.005
+          },
+
+          {
+            a : 6,
+            b : 11,
+            r : 0.005
+          },
+          {
+            a : 11,
+            b : 7,
+            r : 0.005
+          },
+          {
+            a : 7,
+            b : 6,
+            r : 0.2
+          },
+
+        ];
+
+        var flag_pinned = 
+        [
+          {
+            index : 0,
+            pos : [200, 60]
+          },
+          {
+            index : 4,
+            pos : [200, 90]
+          },
+          {
+            index : 8,
+            pos : [200, 120]
+          }
+        ];
+
+        var flag_tris =
+        [
+          0, 4, 5,
+          0, 5, 1,
+          1, 5, 6,
+          1, 6, 2,
+          2, 6, 7,
+          2, 7, 3,
+
+          4, 8, 9,
+          4, 9, 5, 
+          5, 9, 10,
+          5, 10, 6,
+          6, 10, 11,
+          6, 11, 7
+        ];
+
+        var hex_init = 
+        [
+          {
+             pos : [60, 60],
+          oldpos : [60, 60],
+               a : [0, 0]
+          },
+          {
+             pos : [40, 0],
+          oldpos : [40, 0],
+               a : [0, 0] 
+          },
+          {
+             pos : [80, 0],
+          oldpos : [80, 0],
+               a : [0, 0] 
+          },
+          {
+             pos : [0, 60],
+          oldpos : [0, 60],
+               a : [0, 0] 
+          },
+          {
+             pos : [120, 60],
+          oldpos : [120, 60],
+               a : [0, 0] 
+          },
+          {
+             pos : [40, 120],
+          oldpos : [40, 120],
+               a : [0, 0] 
+          },
+          {
+             pos : [80, 120],
+          oldpos : [80, 120],
+               a : [0, 0] 
+          }
+        ];
+
+        var hex_constraints = 
+        [
+          {
+             a : 1,
+             b : 3,
+            r : 0.2
+          },
+          {
+             a : 3,
+             b : 0,
+            r : 0.2
+          },
+          {
+             a : 0,
+             b : 1,
+            r : 0.2
+          },
+          {
+             a : 1,
+             b : 0,
+             r : 0.2
+          },
+          {
+             a : 0,
+             b : 2,
+            r : 0.2
+          },
+          {
+             a : 2,
+             b : 1,
+            r : 0.2
+          },
+          {
+             a : 2,
+             b : 0,
+            r : 0.2
+          },
+          {
+             a : 0,
+             b : 4,
+            r : 0.2
+          },
+          {
+             a : 4,
+             b : 2,
+            r : 0.2
+          },
+          {
+             a : 4,
+             b : 0,
+            r : 0.2
+          },
+          {
+             a : 0,
+             b : 6,
+            r : 0.2
+          },
+          {
+             a : 6,
+             b : 4,
+            r : 0.2
+          },
+          {
+             a : 6,
+             b : 0,
+            r : 0.2
+          },
+          {
+             a : 0,
+             b : 5,
+            r : 0.2
+          },
+          {
+             a : 5,
+             b : 6,
+            r : 0.2
+          },
+          {
+             a : 0,
+             b : 3,
+            r : 0.2
+          },
+          {
+             a : 3,
+             b : 5,
+            r : 0.2
+          },
+          {
+             a : 5,
+             b : 0,
+            r : 0.2
+          }
+        ];
+
+        var hex_pinned = 
+        [
+          {
+            index : 1,
+            pos : [40, 0]
+          },
+          {
+            index : 2,
+            pos : [80, 0]
+          }
+        ];
+
+        var dude_init =
+        [
+          { // 0
+               pos : [60, 0],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 1
+               pos : [60, 20],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 2
+               pos : [30, 40],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 3
+               pos : [90, 40],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 4
+               pos : [20, 60],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 5
+               pos : [100, 60],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 6
+               pos : [35, 65],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 7
+               pos : [85, 65],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 8
+               pos : [20, 80],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 9
+               pos : [100, 80],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 10
+               pos : [30, 90],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 11
+               pos : [90, 90],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 12
+               pos : [30, 110],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 13
+               pos : [90, 110],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 14
+               pos : [30, 140],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+          { // 15
+               pos : [90, 140],
+            oldpos : [0, 0],
+                 a : [0, 0]
+          },
+        ];
+
+        // using golden ration - 20 * 1.61803 = 32.36
+        var dude_constraints =
+        [
+          {
+            a : 1,
+            b : 0,
+            r : 0.5
+          },
+          {
+            a : 1,
+            b : 2,
+            r : 1.0
+          },
+          {
+            a : 2,
+            b : 3,
+            r : 1.0
+          },
+          {
+            a : 1,
+            b : 3,
+            r : 1.0
+          },
+          {
+            a : 2,
+            b : 4,
+            r : 1.0
+          },
+          {
+            a : 3,
+            b : 5,
+            r : 1.0
+          },
+          {
+            a : 2,
+            b : 6,
+            r : 1.0
+          },
+          {
+            a : 6,
+            b : 7,
+            r : 1.0
+          },
+          {
+            a : 3,
+            b : 7,
+            r : 1.0
+          },
+          {
+            a : 2,
+            b : 7,
+            r : 1.0
+          },
+          {
+            a : 3,
+            b : 6,
+            r : 1.0
+          },
+          {
+            a : 1,
+            b : 6,
+            r : 1.0
+          },
+          {
+            a : 1,
+            b : 7,
+            r : 1.0
+          },
+          {
+            a : 4,
+            b : 8,
+            r : 1.0
+          },
+          {
+            a : 5,
+            b : 9,
+            r : 1.0
+          },
+          {
+            a : 6,
+            b : 10,
+            r : 1.0
+          },
+          {
+            a : 7,
+            b : 11,
+            r : 1.0
+          },
+          {
+            a : 10,
+            b : 11,
+            r : 1.0
+          },
+          {
+            a : 10,
+            b : 12,
+            r : 1.0
+          },
+          {
+            a : 11,
+            b : 13,
+            r : 1.0
+          },
+          {
+            a : 12,
+            b : 14,
+            r : 1.0
+          },
+          {
+            a : 13,
+            b : 15,
+            r : 1.0
+          },
+          {
+            a : 6,
+            b : 11,
+            r : 1.0
+          },
+          {
+            a : 7,
+            b : 10,
+            r : 1.0
+          }
+        ];
+
+        var dude_pinned =
+        [
+          {
+            index : 0,
+            pos : [60, 0]
+          }
+        ];
+
+        var flag    = new Verlet(flag_init, flag_constraints, flag_pinned, 1, 50, 0);
+        var hexagon = new Verlet(hex_init, hex_constraints, hex_pinned, 5, 10, 0);
+        var dude    = new Verlet(dude_init, dude_constraints, dude_pinned, 5, 200, 0);
+        var div     = document.createElement('div');
+        var canvas  = document.createElement('canvas');
+
+        Verlet.setWind(0, 0);
+
+        document.body.appendChild(div);
+        div.appendChild(canvas);
+        canvas.width  = 600;
+        canvas.height = 600;
+
+
+        var advance = function() {
+
+            Enlil.tick();
+
+            // clear
+            var ctx = canvas.getContext('2d');
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = 'rgba(255,255,255,1)';
+            ctx.fillRect(0, 0, 600, 600);
+            ctx.globalCompositeOperation = 'lighter';
+            
+            // draw flag
+            for(var i = 0; i < flag.constraints.length; i++)
+            {
+              ctx.strokeStyle = '#00FF00';
+              ctx.beginPath();
+              ctx.moveTo(flag.pos[flag.constraints[i].a].elements[0], flag.pos[flag.constraints[i].a].elements[1]);
+              ctx.lineTo(flag.pos[flag.constraints[i].b].elements[0], flag.pos[flag.constraints[i].b].elements[1]);
+              ctx.stroke();
+            }           
+
+            for(var i = 0; i < flag.pos.length; i++)
+            {
+              ctx.beginPath();
+              ctx.arc(flag.pos[i].elements[0], flag.pos[i].elements[1], 2, 0, 2 * Math.PI, false);
+              ctx.fillStyle = '#FFFFFF'; 
+              ctx.fill();
+
+              /* Draw the numbered index of the verlet point below the point. */
+              ctx.font = "bold 12px arial";
+              ctx.fillText(i, flag.pos[i].elements[0], flag.pos[i].elements[1]);
+            }
+
+
+            // draw hexagon
+            for(var i = 0; i < hexagon.constraints.length; i++)
+            {
+              ctx.strokeStyle = '#FF0000';
+              ctx.beginPath();
+              ctx.moveTo(hexagon.pos[hexagon.constraints[i].a].elements[0], hexagon.pos[hexagon.constraints[i].a].elements[1]);
+              ctx.lineTo(hexagon.pos[hexagon.constraints[i].b].elements[0], hexagon.pos[hexagon.constraints[i].b].elements[1]);
+              ctx.stroke();
+            }
+
+            // draw dude
+            for(var i = 0; i < dude.constraints.length; i++)
+            {
+              ctx.strokeStyle = '#FFFF00';
+              ctx.beginPath();
+              ctx.moveTo(dude.pos[dude.constraints[i].a].elements[0], dude.pos[dude.constraints[i].a].elements[1]);
+              ctx.lineTo(dude.pos[dude.constraints[i].b].elements[0], dude.pos[dude.constraints[i].b].elements[1]);
+              ctx.stroke();
+            }
+
+            flag.timeStep();
+            hexagon.timeStep();
+            dude.timeStep();
+            Verlet.bombTick();
+            Verlet.windTick();
+
+            fps.innerHTML = 'FPS: ' + Enlil.fps;
+        }
+
+        var keyHandler = function keyDown (event) {
+          var keyCodes = {
+             32: "space",   // space
+
+          };
+
+          if(keyCodes[event.keyCode]) {
+             event.stop();
+
+             flag.removePins();
+          }
+        };
+
+        var clickHandler = function (event) {
+           var target = event.target || event.srcElement;
+           var pageX = event.pageX;
+           var pageY = event.pageY;
+           var pirLoc;
+           var dir;
+
+           if(pageX == undefined) {
+              pageX = event.clientX + document.body.scrollLeft;
+              pageY = event.clientY + document.body.scrollTop;
+           }
+           //dude.removePins();
+           Verlet.setBomb(pageX, pageY);
+        }
+
+        require(['../lib/domReady'], function (domReady) {
+           domReady(function () {
+              Enlil.startFPS();
+              Enlil.registerRunLoop(advance);
+              Enlil.addEventHandler(document, "keydown", keyHandler)
+              Enlil.addEventHandler(document, "click",   clickHandler)
+              Enlil.start();
+           });
+        });
+      });
+
+   </script>
+</html>
