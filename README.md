@@ -35,7 +35,8 @@ The intent of Enlil is to package up and provide resources to HTML5 game develop
 ## Special Thanks:
 
 Sprite sheets in the example directory courtesy of Sithjester at http://untamed.wild-refuge.net/rpgxp.php
-The vertex module borrows heavily from Sylvester.js implementation for physics related to 2d vectors.
+
+The vertex module borrows heavily from Sylvester.js (James Coglan) implementation for physics related to 2d vectors.
 
 ## Questions/Feedback:
 
