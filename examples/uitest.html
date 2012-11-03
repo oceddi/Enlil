@@ -1,68 +1,126 @@
 <html>
-   <head>
-      <script  src="../lib/thirdparty/require.js"></script>
-   </head>
-   <body>
-      <h1>UI Test Page</h1>
+  <head>
+    <script  src="../lib/thirdparty/require.js"></script>
+  </head>
+  <body>
+    <h1>UI Test Page</h1>
 
-      <div id='version'></div> 
-      <div id='fps'></div>
+    <div id='version'></div> 
+    <div id='fps'></div>
 
       click anywhere on the browser to place a speech bubble.
-   </body>
+  </body>
    
-   <script type="text/javascript">
-   	    require(["../lib/enlil", "../lib/ui"], function(Enlil, UI) {
-   	    	var bubble1 = UI.createSpeechBubble('This is a really long message to display!', 30, 50, 200);
-   	    	var bubble2 = UI.createSpeechBubble('Shorter', 8, 150, 400);
-   	    	var bubble3 = UI.createSpeechBubble('Medium Sized Message!', 15, 250, 600);
+  <script type="text/javascript">
+   	require(["../lib/enlil", "../lib/ui", "../lib/sheets", "../lib/path", "../lib/actor"], function(Enlil, UI, Sheets, Paths, Actors) {
+      var bubble1 = UI.createSpeechBubble('This is a really long message to display!', 30, 50, 200);
+      var bubble2 = UI.createSpeechBubble('Shorter', 8, 150, 400);
+      var bubble3 = UI.createSpeechBubble('Medium Sized Message!', 15, 250, 600);
 
-		    var advance = function() {
-				Enlil.tick();
-				fps.innerHTML = 'FPS: ' + Enlil.fps;
-		    };
+	    var advance = function() {
 
-		    var run = function () {
-		        Enlil.startFPS();
-		        Enlil.registerRunLoop(advance);
-		        Enlil.start(30);
-		    };
+        var locations   = Paths.interpolateAll();
+        pirateDave.drawGroup(locations[piratePath].gid,  0, locations[piratePath].x,  locations[piratePath].y);
+        Enlil.tick();
+        fps.innerHTML = 'FPS: ' + Enlil.fps;
+	    };
 
-	        var clickHandler = function userClicked (event) {
-	        	var words  = ['NiCe', 'sweeeet', 'cool', 'righteOUS', 'DUDE!'];
-	        	var size   = [10, 15, 20, 25, 30, 40];
-	        	var target = event.target || event.srcElement;
-            	var pageX  = event.pageX;
-            	var pageY  = event.pageY;
-            	var div    = document.createElement('div');
+      var run = function () {
+        Enlil.startFPS();
+        Enlil.registerRunLoop(advance);
+        Enlil.start(30);
+      };
 
-            	div.setAttribute('id', new Date().getTime());
-            	document.body.appendChild(div);
-            	var	bubbleColors = {
-					     fill: 'rgba(255, 128,   0, 0.5)',
-					  outline: 'rgba(255,   0, 255, 1.0)',
-				    textInner: 'rgba(  0, 255,   0, 1.0)',
-				    textOuter: 'rgba(  0,   0,   0, 1.0)'
-			    };
-	        	var bubble = UI.createSpeechBubble(words[Math.floor(Math.random()*words.length)],
-	        	                                   size[Math.floor(Math.random()*size.length)],
-	        	                                   pageX-11, pageY-2, bubbleColors);
-	        	UI.showWindow(bubble, div.id);
-	        };
+      var pirate = new Sheets(
+      {
+         resource:'assets/pirate_m2.png',
+         cwidth:32,
+         cheight:48,
+         groups:
+         {
+            'down'  : [  0,  3 ],
+            'left'  : [  4,  7 ],
+            'right' : [  8, 11 ],
+            'up'    : [ 12, 15 ]  
+         }
+      });
 
+      var pirateDave = new Actors(
+         {  
+            name : 'pirate_dave',
+            sheet : pirate,
+            rectangle : [32, 48]
+         }
+      );
+      
+      Paths.add('pirate_walk',
+      {
+         waypoints:
+         [
+            /*  x, y */
+            [ 350, 50 ],
+            [ 400, 50 ]
+         ]
+      });
 
-	   	    require(['../lib/domReady'], function (domReady) {
-	            domReady(function () {
-	                Enlil.startFPS();
-	                Enlil.registerRunLoop(advance);
-	                Enlil.addEventHandler(document, "click",   clickHandler);
-	                UI.showWindow(bubble1);
-				    UI.showWindow(bubble2);
-					UI.showWindow(bubble3);
-	                Enlil.start();
-	            });
-	         });
-   	    });
-   </script>
+      var piratePath = Paths.instantiate('pirate_walk',
+         {
+            automatic: true,
+            repeats:   false,
+            closeLoop: false,
+            reverses:  false,
+            curve:     'linear',
+            intervals: 
+            [
+               5
+            ],
+            groups:
+            [
+               'right'
+            ]
+         }
+      );
+
+      var clickHandler = function userClicked (event) {
+        var words  = ['NiCe', 'sweeeet', 'cool', 'righteOUS', 'DUDE!'];
+        var size   = [10, 15, 20, 25, 30, 40];
+        var target = event.target || event.srcElement;
+        var pageX  = event.pageX;
+        var pageY  = event.pageY;
+        var div    = document.createElement('div');
+
+        div.setAttribute('id', new Date().getTime());
+        document.body.appendChild(div);
+        var	bubbleColors = {
+          fill: 'rgba(255, 128,   0, 0.5)',
+          outline: 'rgba(255,   0, 255, 1.0)',
+          textInner: 'rgba(  0, 255,   0, 1.0)',
+          textOuter: 'rgba(  0,   0,   0, 1.0)'
+        };
+        var bubble = UI.createSpeechBubble(words[Math.floor(Math.random()*words.length)],
+      	                                   size[Math.floor(Math.random()*size.length)],
+      	                                   pageX-11, pageY-2, bubbleColors);
+      	UI.showWindow(bubble, div.id);
+      };
+
+      require(['../lib/domReady'], function (domReady) {
+        domReady(function () {
+          Enlil.startFPS();
+          Enlil.registerRunLoop(advance);
+          Enlil.addEventHandler(document, "click",   clickHandler);
+          UI.showWindow(bubble1);
+          UI.showWindow(bubble2);
+          UI.showWindow(bubble3);
+          Enlil.start();
+
+          pirateDave.addSpeechBubble({
+            text : 'test',
+            x : 0,
+            y : 0
+          });
+        });
+      });
+   	});
+  </script>
 
 </html>

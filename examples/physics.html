@@ -54,8 +54,8 @@
          waypoints:
          [
             /*  x, y */
-            [ 50, 50 ],
-            [ 100, 50 ]
+            [ 350, 50 ],
+            [ 400, 50 ]
          ]
       });
 
@@ -149,24 +149,23 @@
                collisions = pirateDave.getCollisions();
                collisions2 = ifrits[2].getCollisionsWithinCircle(150);
 
-               for(var j=0; j<collisions.length; j++)
+               for(var i=0; i<collisions.length; i++)
                {
-                  if(collisions[j].getEffectIDs().length === 0)
-                     collisions[j].addTimedEffect(
-                         Effects.fadeOut,
+                  if(collisions[i].hasActiveEffect(Effects.TYPE_BURN) === false)
+                     collisions[i].addTimedParticleEffect(
+                         Effects.TYPE_BURN,
                          (new Date).getTime(),
-                         1,
-                         10);
+                         1, 1, 5,
+                         false);
                }
 
-               if(collisions2.length && ifrits[2].getEffectIDs().length == 0)
+               if(collisions2.length && ifrits[2].hasActiveEffect(Effects.TYPE_EXPLODE) === false)
                {
-                  console.log(collisions2[0]);
-
-                  ifrits[2].addTimedEffect(
-                         Effects.invert,
+                  ifrits[2].addTimedParticleEffect(
+                         Effects.TYPE_EXPLODE,
                          (new Date).getTime(),
-                         1, 1, 1);
+                         1, 1, 10,
+                         true);
                }
             }
          }

@@ -143,8 +143,11 @@
                      // Isometric.renderTilemapToOffScreenCanvas(i);
                   }
                   //Isometric.drawViewport(xAnchor, yAnchor);
+                  var sheet = Isometric.getSheet();
+                  var copy  = sheet.copy();
 
-                  Effects.addTimedEffect(Effects.fadeOut, ['isometric', 0], (new Date).getTime(), 3, 10);
+                  new Effects(Effects.TYPE_FADEOUT, [sheet, copy, 0], (new Date).getTime(), 4, 16, 8);
+                  new Effects(Effects.TYPE_FADEIN, [sheet, copy, 0], (new Date).getTime()+1000*10, 4, 16, 8);
                };
 
                domReady(function () {

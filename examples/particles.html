@@ -11,7 +11,7 @@
    </body>
 
    <script type="text/javascript">
-   require(['../lib/enlil','../lib/input', '../lib/particles'], function(Enlil, Input, Particles) {
+   require(['../lib/enlil','../lib/input', '../lib/particles', '../lib/sheets'], function(Enlil, Input, Particles, Sheets) {
 
       var waterfall_emitter = {
                 width : 250,
@@ -138,6 +138,10 @@
             Enlil.registerRunLoop(advance);
             Enlil.addEventHandler(document, "click",   clickHandler)
             Enlil.start();
+
+            wf.activate();
+            fi.activate();
+            fw.activate();
          });
       });
    });
