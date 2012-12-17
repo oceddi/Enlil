@@ -1,0 +1,233 @@
+ <html>
+   <head>
+      <script src="../lib/thirdparty/require.js"></script>
+   </head>
+   <body>
+   <h1>Pathfinding Test Page</h1>
+
+   <div id='version'></div> 
+   <div id='fps'></div> 
+   <div id='stage'></div>
+
+   </body>
+
+   <script type="text/javascript">
+
+      require(['../lib/enlil', '../lib/sheets', '../lib/actor', '../lib/path', '../lib/ai'], function(Enlil, Sheets, Actors, Paths, AI) {
+         var lastPath;
+         var mummyPath = -1;
+         var grid = new Object;
+         var ai   = new AI();
+         var goal;
+         var drawMe = true;
+
+         var TWIDTH  = 40;
+         var THEIGHT = 40;
+
+         var div    = document.getElementById('stage');
+         var canvas = document.createElement('canvas');
+         var ctx    = canvas.getContext('2d');
+
+         var chartiles  = new Sheets(
+         {
+            resource:'assets/tilecrusader-art/characters-32x32.png',
+            cwidth:32,
+            cheight:32
+         });
+
+         var mummy = new Actors( 
+            {
+               name : 'mummy',
+              sheet : chartiles,
+                div : 'stage',
+           relative : false
+            }
+         );
+
+         var floortiles = new Sheets(
+         {
+            resource:'assets/tilecrusader-art/floor-tiles-20x20.png',
+            cwidth:20,
+            cheight:20
+         });
+
+         var walltiles = new Sheets(
+         {
+            resource:'assets/tilecrusader-art/wall-tiles-40x40.png',
+            cwidth:40,
+            cheight:40
+         });
+
+         grid.squares = [];
+         grid.width   = 16;
+         grid.height  = 16;
+         
+         canvas.width  = TWIDTH*grid.width;
+         canvas.height = THEIGHT*grid.height;
+
+         div.appendChild(canvas);
+
+         for(var y = 0; y < grid.height; y++)
+         {
+            var row = [];
+            for(var x = 0; x < grid.width; x++)
+            {
+               var value =
+               {
+                  x : x,
+                  y : y,
+                  parent : 0,
+                  blocked : false
+               };
+               
+
+               // Randomly make a square blocked 20% of time.
+               if(x != 0 && y!=0)
+               {
+                  if(Math.floor((Math.random()*5)+1) === 1)
+                  {
+                     value['blocked'] = true;
+                  }
+               }
+
+               row.push(value);
+            }
+            grid.squares.push(row);
+         }
+
+
+
+         function drawGrid() {
+            if(drawMe) {
+               ctx.clearRect(0,0,canvas.width,canvas.height);
+
+               for(var y = 0; y < grid.height; y++)
+               {
+                  for(var x = 0; x < grid.width; x++)
+                  {
+                     if(grid.squares[y][x].blocked === true)
+                     {
+                        walltiles.drawCellAtPosition(ctx, 12, x*TWIDTH, y*THEIGHT);
+                     }
+                     else
+                     {
+                        floortiles.drawCellAtPosition(ctx, 5, x*TWIDTH, y*THEIGHT);
+                        floortiles.drawCellAtPosition(ctx, 6, x*TWIDTH+(TWIDTH>>>1), y*THEIGHT);
+                        floortiles.drawCellAtPosition(ctx, 7, x*TWIDTH, y*THEIGHT+(THEIGHT>>>1));
+                        floortiles.drawCellAtPosition(ctx, 8, x*TWIDTH+(TWIDTH>>>1), y*THEIGHT+(THEIGHT>>>1));
+                     }
+                  }
+               }
+
+               if(lastPath)
+               {
+                  for(var i=0; i < lastPath.length; i++)
+                  {
+                     console.log(lastPath[i]);
+                     ctx.strokeStyle = 'rgba(255, 0, 0, 1.0)';
+                     ctx.lineWidth   = '1';
+                     ctx.beginPath();
+                     ctx.arc(lastPath[i].x*TWIDTH+(TWIDTH>>>1), lastPath[i].y*THEIGHT+(THEIGHT>>>1), (TWIDTH>>>1), 0, Math.PI*2, true); 
+                     ctx.closePath();
+                     ctx.stroke();
+                  }
+                  ctx.strokeStyle = 'rgba(0, 0, 255, 1.0)';
+                  ctx.lineWidth   = '1';
+                  ctx.beginPath();
+                  ctx.arc(goal.x*TWIDTH+(TWIDTH>>>1), goal.y*THEIGHT+(THEIGHT>>>1), (TWIDTH>>>1), 0, Math.PI*2, true); 
+                  ctx.closePath();
+                  ctx.stroke();
+
+               }
+               drawMe = false;
+            }
+         }
+
+         var clickHandler = function(event) {
+            var target = event.target || event.srcElement;
+            var cX;
+            var cY;
+            var wpoints   = [];
+            var ints      = [];
+
+            if(event.x !== undefined && event.y !== undefined) {
+               cX = event.x - canvas.offsetLeft;
+               cY = event.y - canvas.offsetTop;
+            }
+            
+            if(mummyPath >= 0 && !Paths.hasStopped(mummyPath))
+               return;
+
+            console.log("CLICK!!! X:" + cX + " Y: " + cY);
+
+            var start = grid.squares[0][0];
+
+            goal  = grid.squares[(parseInt(cY/THEIGHT) + ((cY % THEIGHT) ? 1 : 0))-1][(parseInt(cX/TWIDTH) + ((cX % TWIDTH) ? 1 : 0))-1];
+
+            lastPath = ai.aStar(start, goal, grid);
+
+            if(lastPath && lastPath.length)
+            {
+               // we need to convert grid coordinates to pixel coordinates.
+               for(var i = 0; i < lastPath.length; i++)
+               {
+                  wpoints[i] = [
+                     (lastPath[i].x*TWIDTH)+(TWIDTH>>>1)+8,
+                     (lastPath[i].y*THEIGHT)+(THEIGHT>>>1)+72
+                  ];
+                  ints[i] = 0.1;
+               }
+
+               if(mummyPath < 0)
+               {
+                  Paths.add('mummy_walk',
+                  {
+                     waypoints: wpoints
+                  });
+
+                  mummyPath = Paths.instantiate('mummy_walk',
+                  {
+                     automatic: true,
+                     repeats:   false,
+                     closeLoop: false,
+                     reverses:  false,
+                     curve:     'linear',
+                     intervals: ints
+                  });
+               }
+               else
+               {
+                  Paths.changeWayPoints('mummy_walk', wpoints);
+                  Paths.changeIntervals(mummyPath, ints);
+                  Paths.reset(mummyPath);
+               }
+               drawMe = true;
+            }
+         };
+
+         var advance = function() {
+
+            drawGrid();
+            if(Enlil.frameCount % 2 === 0)
+            {
+               if(mummyPath >= 0)
+               {
+                  var locations = Paths.interpolateAll();
+
+                  mummy.draw(6, locations[mummyPath].x,  locations[mummyPath].y);
+               }
+            }
+            Enlil.tick();
+         };
+
+         require(['../lib/domReady'], function (domReady) {
+            domReady(function () {
+               Enlil.startFPS();
+               Enlil.registerRunLoop(advance);
+               Enlil.addEventHandler(canvas, "click", clickHandler)
+               Enlil.start();
+            });
+         });
+      });
+   </script>
+</html>
