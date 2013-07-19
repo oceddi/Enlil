@@ -11,13 +11,13 @@
    </body>
 
    <script type="text/javascript">
-      var xAnchor = 0;
-      var yAnchor = 0;
-      var MOUSEPAN_SIZE = 150;
+      var xAnchor            = 0;
+      var yAnchor            = 0;
+      var MOUSEPAN_SIZE      = 150;
       var MOUSEPAN_SIZE_FAST = 50;
-      var MOUSEPAN_STEP = 1;
+      var MOUSEPAN_STEP      = 1;
       var MOUSEPAN_STEP_FAST = 5;
-      var PAN_DELAY  = 1;
+      var PAN_DELAY          = 1;
 
       var mapWidth   = 42*16;
       var mapHeight  = 34*16;
@@ -46,7 +46,8 @@
          var pirateDave = new Actors(
             {  
               sheet : pirate
-//               ,rectangle : [32, 48]
+               //,rectangle : [32, 48]
+               ,name : "DAVE"
             }
          );
 
@@ -164,7 +165,7 @@
                case 37:
                   console.log("left!!!" );
 
-                  pirateDave.changePhysicsAttr(-50.0, -5.0, 0, 0);
+                  pirateDave.changePhysicsAttr(-50.0, -12.0, 0, 0);
                   lastDirection = "left";
                   stepCount += 4;
                   break;
@@ -172,7 +173,7 @@
                case 39:
                   console.log("right!!!" );
 
-                  pirateDave.changePhysicsAttr(50.0, -5.0, 0, 0);
+                  pirateDave.changePhysicsAttr(50.0, -12.0, 0, 0);
                   lastDirection = "right";
                   stepCount += 4;
                   break;
@@ -191,24 +192,26 @@
                domReady(function () {
 
                   var params = {
-                     pid : 'div1',
-                     mode : Tilemap.FULLSCREEN,
-                     tilewidth : 16,
-                     tileheight : 16,
-                     mapwidth : mapWidth,
-                     mapheight : mapHeight,
-                     screenwidth : 1024,
+                     pid          : 'div1',
+                     mode         : Tilemap.RELATIVE_DIV,
+                     tilewidth    : 16,
+                     tileheight   : 16,
+                     mapwidth     : mapWidth,
+                     mapheight    : mapHeight,
+                     screenwidth  : 1024,
                      screenheight : 512,
-                     scalefactor: 2,
-                     pathToTiles : './assets/spelunky-tiles.png',
+                     scalefactor  : 2,
+                     pathToTiles  : './assets/spelunky-tiles.png',
                      callback : function() {
 
                         Tilemap.setMapData(0, './assets/spelunky0.png');
                         Tilemap.drawViewport(xAnchor, yAnchor);
 
-                        var data = {
-                                x : 128, // starting position
-                                y : 47,  
+                        var data = { 
+                                // x : 69, // starting position
+                                // y : 8,  
+                                x : 469, // starting position
+                                y : 658,  
                                vx : 0.0, // starting velocity
                                vy : 0.0,
                          collider : Tilemap.physicsColliderCheck
